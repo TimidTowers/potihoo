@@ -1,0 +1,113 @@
+---
+import Base from '@/layouts/Base.astro';
+import { useTranslations, localizedPath } from '@/i18n/utils';
+import { getPublishedProjects, localizedTitle, localizedDescription } from '@/lib/projects';
+import { render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const projects = await getPublishedProjects();
+  return projects.map((p) => ({
+    params: { slug: p.id },
+    props: { project: p },
+  }));
+}
+
+const { project } = Astro.props;
+const lang = 'en' as const;
+const t = useTranslations(lang);
+const { Content } = await render(project);
+
+const title = localizedTitle(project, lang);
+const description = localizedDescription(project, lang);
+const cat = t(`work.categories.${project.data.category}`);
+
+const all = await getPublishedProjects();
+const idx = all.findIndex((p) => p.id === project.id);
+const next = all[(idx + 1) % all.length];
+---
+
+<Base title={title} description={description}>
+  <article>
+    <section class="mx-auto max-w-7xl px-5 lg:px-10 pt-12">
+      <a
+        href={localizedPath('/work', lang)}
+        class="inline-flex items-center gap-2 text-sm text-paper/60 hover:text-magenta-500 transition-colors mb-12"
+      >
+        <span>←</span> {t('work.back')}
+      </a>
+
+      <div class="flex flex-wrap gap-2 mb-6">
+        <span class="px-3 py-1 rounded-full bg-magenta-500 text-paper text-xs font-mono uppercase tracking-wider">{cat}</span>
+        <span class="px-3 py-1 rounded-full border border-paper/20 text-paper/70 text-xs font-mono">{project.data.year}</span>
+      </div>
+
+      <h1 class="font-display text-5xl md:text-8xl font-semibold tracking-tighter leading-[0.95] max-w-4xl">{title}</h1>
+      <p class="mt-8 max-w-2xl text-xl text-paper/75">{description}</p>
+    </section>
+
+    <section class="mx-auto max-w-7xl px-5 lg:px-10 mt-16">
+      <div class="aspect-[16/10] rounded-3xl overflow-hidden bg-paper/5 reveal">
+        {project.data.video ? (
+          <video src={project.data.video} class="size-full object-cover" autoplay muted loop playsinline></video>
+        ) : (
+          <img src={project.data.cover} alt={title} class="size-full object-cover" />
+        )}
+      </div>
+    </section>
+
+    <section class="mx-auto max-w-7xl px-5 lg:px-10 grid md:grid-cols-12 gap-10 md:gap-16 py-20">
+      <aside class="md:col-span-4 space-y-8">
+        {project.data.role && (
+          <div class="reveal">
+            <p class="font-mono text-xs uppercase tracking-widest text-fire-500 mb-2">{t('work.role')}</p>
+            <p class="text-lg">{project.data.role}</p>
+          </div>
+        )}
+        {project.data.client && (
+          <div class="reveal">
+            <p class="font-mono text-xs uppercase tracking-widest text-fire-500 mb-2">{t('work.client')}</p>
+            <p class="text-lg">{project.data.client}</p>
+          </div>
+        )}
+        {project.data.tools.length > 0 && (
+          <div class="reveal">
+            <p class="font-mono text-xs uppercase tracking-widest text-fire-500 mb-2">{t('work.tools')}</p>
+            <ul class="flex flex-wrap gap-2">
+              {project.data.tools.map((tool) => (
+                <li class="px-3 py-1 rounded-full border border-paper/20 text-sm">{tool}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </aside>
+
+      <div class="md:col-span-8 reveal prose-custom">
+        <Content />
+      </div>
+    </section>
+
+    {project.data.gallery.length > 0 && (
+      <section class="mx-auto max-w-7xl px-5 lg:px-10 pb-24 grid gap-6 md:grid-cols-2">
+        {project.data.gallery.map((src) => (
+          <div class="aspect-[4/5] rounded-2xl overflow-hidden bg-paper/5 reveal">
+            <img src={src} alt={title} loading="lazy" class="size-full object-cover" />
+          </div>
+        ))}
+      </section>
+    )}
+
+    {next && next.id !== project.id && (
+      <section class="border-t border-paper/10 mx-auto max-w-7xl px-5 lg:px-10 py-20">
+        <a href={localizedPath(`/work/${next.id}`, lang)} class="group flex items-center justify-between gap-6">
+          <div>
+            <p class="font-mono text-xs uppercase tracking-widest text-paper/50 mb-2">Next →</p>
+            <h3 class="font-display text-3xl md:text-5xl font-semibold tracking-tight group-hover:text-gradient transition">
+              {localizedTitle(next, lang)}
+            </h3>
+          </div>
+          <span class="size-14 rounded-full bg-sun-500 text-ink grid place-items-center text-xl group-hover:bg-fire-500 group-hover:text-paper group-hover:rotate-45 transition">→</span>
+        </a>
+      </section>
+    )}
+  </article>
+</Base>

@@ -1,0 +1,63 @@
+---
+import { localizedPath, type Lang } from '@/i18n/utils';
+
+interface Props {
+  slug: string;
+  title: string;
+  category: string;
+  year?: number | string;
+  cover?: string;
+  lang: Lang;
+  size?: 'sm' | 'md' | 'lg';
+}
+
+const { slug, title, category, year, cover, lang, size = 'md' } = Astro.props;
+
+const sizeClasses = {
+  sm: 'aspect-[4/3]',
+  md: 'aspect-[4/5]',
+  lg: 'aspect-[3/4] md:aspect-[16/10]',
+};
+
+const href = localizedPath(`/work/${slug}`, lang);
+---
+
+<a href={href} class="group block reveal">
+  <div class:list={['relative overflow-hidden rounded-2xl bg-paper/5 border border-paper/5', sizeClasses[size]]}>
+    {cover ? (
+      <img
+        src={cover}
+        alt={title}
+        loading="lazy"
+        decoding="async"
+        class="absolute inset-0 size-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105"
+      />
+    ) : (
+      <div class="absolute inset-0 grid place-items-center bg-gradient-to-br from-magenta-500 via-fire-500 to-sun-500">
+        <span class="font-display text-6xl text-paper/20">{title.charAt(0)}</span>
+      </div>
+    )}
+
+    <div class="absolute inset-0 bg-gradient-to-t from-ink via-ink/30 to-transparent opacity-60 group-hover:opacity-90 transition-opacity"></div>
+
+    <div class="absolute top-4 left-4 flex gap-2">
+      <span class="px-2 py-1 rounded-full bg-paper/10 backdrop-blur text-[10px] font-mono uppercase tracking-wider text-paper">
+        {category}
+      </span>
+      {year && (
+        <span class="px-2 py-1 rounded-full bg-paper/10 backdrop-blur text-[10px] font-mono text-paper/80">
+          {year}
+        </span>
+      )}
+    </div>
+
+    <div class="absolute inset-x-0 bottom-0 p-5 flex items-end justify-between gap-4">
+      <h3 class="font-display text-xl md:text-2xl font-semibold leading-tight text-paper">
+        {title}
+      </h3>
+      <span class="shrink-0 size-9 rounded-full bg-sun-500 text-ink grid place-items-center transition-transform group-hover:rotate-45 group-hover:bg-fire-500 group-hover:text-paper">
+        →
+      </span>
+    </div>
+  </div>
+</a>

@@ -1,0 +1,102 @@
+---
+import { getLangFromUrl, useTranslations, localizedPath, stripLocaleFromPath, languages, type Lang } from '@/i18n/utils';
+
+const lang: Lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const currentBase = stripLocaleFromPath(Astro.url.pathname);
+
+const links = [
+  { href: localizedPath('/', lang),        label: t('nav.home'),    base: '/' },
+  { href: localizedPath('/work', lang),    label: t('nav.work'),    base: '/work' },
+  { href: localizedPath('/about', lang),   label: t('nav.about'),   base: '/about' },
+  { href: localizedPath('/contact', lang), label: t('nav.contact'), base: '/contact' },
+];
+
+const isActive = (base: string) =>
+  base === '/' ? currentBase === '/' : currentBase.startsWith(base);
+---
+
+<header class="fixed top-0 left-0 right-0 z-40 backdrop-blur-md bg-ink/60 border-b border-paper/5">
+  <nav class="mx-auto max-w-7xl px-5 lg:px-10 py-4 flex items-center justify-between gap-6">
+    <a href={localizedPath('/', lang)} class="group flex items-center gap-2 font-display text-xl font-semibold tracking-tight">
+      <span class="inline-block size-3 rounded-full bg-magenta-500 group-hover:bg-fire-500 transition-colors"></span>
+      <span>potihoo</span>
+      <span class="text-magenta-500 group-hover:text-fire-500 transition-colors">.</span>
+    </a>
+
+    <ul class="hidden md:flex items-center gap-8 text-sm font-medium">
+      {links.map((l) => (
+        <li>
+          <a
+            href={l.href}
+            class:list={[
+              'relative py-2 transition-colors',
+              isActive(l.base) ? 'text-sun-500' : 'text-paper/80 hover:text-paper',
+            ]}
+          >
+            {l.label}
+            {isActive(l.base) && (
+              <span class="absolute -bottom-px left-0 right-0 h-px bg-gradient-to-r from-magenta-500 via-fire-500 to-sun-500"></span>
+            )}
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    <div class="flex items-center gap-2 text-xs font-mono">
+      {(Object.keys(languages) as Lang[]).map((code) => (
+        <a
+          href={localizedPath(currentBase, code)}
+          class:list={[
+            'uppercase px-2 py-1 rounded transition-colors',
+            lang === code ? 'bg-magenta-500 text-paper' : 'text-paper/60 hover:text-paper',
+          ]}
+          aria-current={lang === code ? 'true' : 'false'}
+        >
+          {code}
+        </a>
+      ))}
+    </div>
+
+    <button
+      id="nav-toggle"
+      class="md:hidden flex flex-col gap-1.5 p-2"
+      aria-label="Toggle menu"
+      aria-expanded="false"
+    >
+      <span class="block h-px w-6 bg-paper transition-transform"></span>
+      <span class="block h-px w-6 bg-paper transition-opacity"></span>
+      <span class="block h-px w-6 bg-paper transition-transform"></span>
+    </button>
+  </nav>
+
+  <!-- Mobile menu -->
+  <div id="nav-menu" class="md:hidden hidden border-t border-paper/5 bg-ink">
+    <ul class="px-5 py-6 flex flex-col gap-4 text-lg font-display">
+      {links.map((l) => (
+        <li>
+          <a
+            href={l.href}
+            class:list={[
+              'block py-2',
+              isActive(l.base) ? 'text-sun-500' : 'text-paper',
+            ]}
+          >
+            {l.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</header>
+
+<div class="h-[68px]"></div>
+
+<script>
+  const toggle = document.getElementById('nav-toggle');
+  const menu = document.getElementById('nav-menu');
+  toggle?.addEventListener('click', () => {
+    const open = menu?.classList.toggle('hidden') === false;
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+</script>

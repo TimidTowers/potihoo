@@ -1,0 +1,85 @@
+---
+import Base from '@/layouts/Base.astro';
+import ProjectCard from '@/components/ProjectCard.astro';
+import { getLangFromUrl, useTranslations, type Lang } from '@/i18n/utils';
+import { getPublishedProjects, localizedTitle } from '@/lib/projects';
+
+const lang: Lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const projects = await getPublishedProjects();
+
+const categories = ['all', 'animation', 'characters', 'illustration', 'motion'] as const;
+---
+
+<Base title={t('work.title')}>
+  <section class="mx-auto max-w-7xl px-5 lg:px-10 py-20 md:py-28">
+    <p class="font-mono text-xs uppercase tracking-[0.3em] text-fire-500 mb-4">◆ {t('work.title')}</p>
+    <h1 class="font-display text-6xl md:text-9xl font-semibold tracking-tighter leading-[0.9]">
+      <span class="text-paper">{t('work.title')}</span>
+      <span class="text-gradient italic">.</span>
+    </h1>
+    <p class="mt-8 max-w-2xl text-xl text-paper/70">{t('work.subtitle')}</p>
+
+    <!-- Category filters -->
+    <div id="filters" class="mt-12 flex flex-wrap gap-2">
+      {categories.map((c) => (
+        <button
+          type="button"
+          data-cat={c}
+          class:list={[
+            'filter-btn px-4 py-2 rounded-full border text-sm transition-colors',
+            c === 'all' ? 'border-magenta-500 bg-magenta-500 text-paper' : 'border-paper/20 hover:border-paper text-paper/80',
+          ]}
+        >
+          {c === 'all' ? t('work.all') : t(`work.categories.${c}`)}
+        </button>
+      ))}
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-7xl px-5 lg:px-10 pb-24">
+    {projects.length === 0 ? (
+      <p class="text-paper/50 italic">{t('work.no_projects')}</p>
+    ) : (
+      <div id="grid" class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {projects.map((p) => (
+          <div class="grid-item" data-category={p.data.category}>
+            <ProjectCard
+              slug={p.id}
+              title={localizedTitle(p, lang)}
+              category={t(`work.categories.${p.data.category}`)}
+              year={p.data.year}
+              cover={p.data.cover}
+              lang={lang}
+            />
+          </div>
+        ))}
+      </div>
+    )}
+  </section>
+</Base>
+
+<script>
+  const buttons = document.querySelectorAll<HTMLButtonElement>('.filter-btn');
+  const items = document.querySelectorAll<HTMLElement>('.grid-item');
+
+  const setActive = (active: HTMLButtonElement) => {
+    buttons.forEach((b) => {
+      b.classList.remove('bg-magenta-500', 'border-magenta-500', 'text-paper');
+      b.classList.add('border-paper/20', 'text-paper/80');
+    });
+    active.classList.add('bg-magenta-500', 'border-magenta-500', 'text-paper');
+    active.classList.remove('border-paper/20', 'text-paper/80');
+  };
+
+  buttons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const cat = btn.dataset.cat;
+      setActive(btn);
+      items.forEach((item) => {
+        const match = cat === 'all' || item.dataset.category === cat;
+        item.style.display = match ? '' : 'none';
+      });
+    });
+  });
+</script>

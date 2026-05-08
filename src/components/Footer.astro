@@ -1,0 +1,77 @@
+---
+import { getLangFromUrl, useTranslations, localizedPath, stripLocaleFromPath, type Lang } from '@/i18n/utils';
+
+const lang: Lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const year = new Date().getFullYear();
+const onContactPage = stripLocaleFromPath(Astro.url.pathname).startsWith('/contact');
+
+const social = [
+  { label: 'Instagram', href: 'https://www.instagram.com/potihoo' },
+  { label: 'LinkedIn',  href: 'https://www.linkedin.com/in/anapaulatvi' },
+  { label: 'X',         href: 'https://x.com/poti_hoo' },
+];
+---
+
+<footer class="relative mt-32 border-t border-paper/10 bg-ink">
+  {!onContactPage && (
+    <!-- Slim marquee CTA — hidden on /contact to avoid duplication -->
+    <a
+      href={localizedPath('/contact', lang)}
+      class="block overflow-hidden border-b border-paper/10 group"
+      aria-label={t('contact.title')}
+    >
+      <div class="flex whitespace-nowrap py-2 md:py-3 will-change-transform animate-marquee">
+        {Array.from({ length: 14 }).map(() => (
+          <span class="font-display text-lg md:text-2xl font-semibold tracking-tighter px-4 flex items-center gap-3">
+            <span class="text-gradient">{t('contact.title')}</span>
+            <span class="inline-block size-1.5 md:size-2 rounded-full bg-sun-500 group-hover:bg-fire-500 transition-colors"></span>
+          </span>
+        ))}
+      </div>
+    </a>
+  )}
+
+  <div class="mx-auto max-w-7xl px-5 lg:px-10 py-16 grid gap-12 md:grid-cols-3">
+    <div>
+      <a href={localizedPath('/', lang)} class="inline-flex items-center gap-2 font-display text-2xl font-semibold">
+        <span class="inline-block size-3 rounded-full bg-magenta-500"></span>
+        potihoo<span class="text-magenta-500">.</span>
+      </a>
+      <p class="mt-4 text-paper/60 text-sm max-w-xs">{t('site.tagline')}</p>
+    </div>
+
+    <div>
+      <h3 class="text-sun-500 font-mono text-xs uppercase tracking-widest mb-4">{t('contact.email_label')}</h3>
+      <a href="mailto:hello@potihoo.com" class="text-2xl font-display hover:text-magenta-500 transition-colors break-all">
+        hello@potihoo.com
+      </a>
+    </div>
+
+    <div>
+      <h3 class="text-sun-500 font-mono text-xs uppercase tracking-widest mb-4">{t('contact.social_label')}</h3>
+      <ul class="space-y-2">
+        {social.map((s) => (
+          <li>
+            <a
+              href={s.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-2 text-paper/80 hover:text-magenta-500 transition-colors group"
+            >
+              <span class="opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all">→</span>
+              {s.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+
+  <div class="border-t border-paper/10">
+    <div class="mx-auto max-w-7xl px-5 lg:px-10 py-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-xs font-mono text-paper/50">
+      <span>© {year} potihoo. {t('footer.rights')}</span>
+      <span>{t('footer.made_with')}</span>
+    </div>
+  </div>
+</footer>
