@@ -6,12 +6,12 @@
 
 backend:
   name: github
-  repo: USUARIO-GITHUB/potihoo            # ← cambia por tu-usuario/tu-repo
+  repo: TimidTowers/potihoo
   branch: main
-  base_url: https://decap-proxy.vercel.app # proxy OAuth (ver README — paso 3)
+  base_url: https://potihoo.vercel.app    # OAuth proxy live en /api/* del mismo proyecto
   auth_endpoint: api/auth
 
-# Mientras desarrollas localmente, descomenta esta línea para entrar sin login:
+# Para edición local (requiere `npx decap-server` corriendo):
 # local_backend: true
 
 publish_mode: simple
