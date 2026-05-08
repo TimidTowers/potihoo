@@ -1,21 +1,24 @@
 ---
-title: "Pequeño monstruo"
-title_en: "Little monster"
-description: "Diseño y animación de un personaje principal para un cortometraje 2D. Exploración de gestos y rigging facial."
-description_en: "Main character design and animation for a 2D short film. Exploration of gestures and facial rigging."
-category: "characters"
+title: Pequeño monstruo
+title_en: Little monster
+description: Diseño y animación de un personaje principal para un cortometraje
+  2D. Exploración de gestos y rigging facial.
+description_en: Main character design and animation for a 2D short film.
+  Exploration of gestures and facial rigging.
+category: characters
 year: 2025
-cover: "/images/placeholder-1.svg"
+cover: /images/placeholder-portrait.svg
 gallery:
-  - "/images/placeholder-1.svg"
-  - "/images/placeholder-2.svg"
-  - "/images/placeholder-3.svg"
-role: "Character Designer & Animator"
-client: "Proyecto personal"
+  - /images/placeholder-1.svg
+  - /images/placeholder-2.svg
+  - /images/placeholder-3.svg
+  - /images/placeholder-2.svg
+role: Character Designer & Animator
+client: Proyecto personal
 tools:
-  - "Procreate"
-  - "Toon Boom Harmony"
-  - "After Effects"
+  - Procreate
+  - Toon Boom Harmony
+  - After Effects
 featured: true
 draft: false
 order: 1
