@@ -14,54 +14,54 @@ const heroMediaAlt = t('home.hero_media_alt');
 const hasMedia = heroMedia && heroMedia !== 'home.hero_media' && heroMedia.length > 0;
 ---
 
-<section class="relative min-h-[60vh] md:min-h-[70vh] flex items-center overflow-hidden bg-noise">
+<section class="relative min-h-[42vh] md:min-h-[50vh] flex items-center overflow-hidden bg-noise">
   <!-- Animated background blobs -->
   <div class="pointer-events-none absolute inset-0 -z-10">
-    <div class="absolute -top-32 -left-32 size-[380px] rounded-full bg-magenta-500 blur-[120px] opacity-50 animate-blob"></div>
-    <div class="absolute top-40 -right-32 size-[340px] rounded-full bg-fire-500 blur-[120px] opacity-40 animate-blob" style="animation-delay: -4s;"></div>
-    <div class="absolute -bottom-40 left-1/3 size-[300px] rounded-full bg-sun-500 blur-[120px] opacity-25 animate-blob" style="animation-delay: -8s;"></div>
+    <div class="absolute -top-24 -left-24 size-[266px] rounded-full bg-magenta-500 blur-[90px] opacity-50 animate-blob"></div>
+    <div class="absolute top-28 -right-24 size-[238px] rounded-full bg-fire-500 blur-[90px] opacity-40 animate-blob" style="animation-delay: -4s;"></div>
+    <div class="absolute -bottom-28 left-1/3 size-[210px] rounded-full bg-sun-500 blur-[90px] opacity-25 animate-blob" style="animation-delay: -8s;"></div>
   </div>
 
-  <div class="mx-auto max-w-7xl w-full px-5 lg:px-10 py-12 md:py-16">
-    <p class="font-mono text-[10px] md:text-xs uppercase tracking-[0.3em] text-sun-500 mb-4">
+  <div class="mx-auto max-w-7xl w-full px-5 lg:px-10 py-8 md:py-11">
+    <p class="font-mono text-[9px] md:text-[11px] uppercase tracking-[0.3em] text-sun-500 mb-3">
       ◆ {t('home.hero_eyebrow')}
     </p>
 
     {hasMedia ? (
-      <div class="my-2 reveal">
+      <div class="my-1 reveal">
         <img
           src={heroMedia}
           alt={heroMediaAlt || t('home.hero_title_1')}
-          class="max-h-[40vh] md:max-h-[48vh] w-auto rounded-2xl object-contain animate-float"
+          class="max-h-[28vh] md:max-h-[34vh] w-auto rounded-xl object-contain animate-float"
         />
       </div>
     ) : (
       <h1 class="font-display font-semibold tracking-tighter leading-[0.9]">
-        <span class="block text-5xl md:text-7xl lg:text-8xl text-paper">
+        <span class="block text-4xl md:text-5xl lg:text-6xl text-paper">
           {t('home.hero_title_1')}
         </span>
-        <span class="block text-5xl md:text-7xl lg:text-8xl">
+        <span class="block text-4xl md:text-5xl lg:text-6xl">
           <span class="text-gradient italic">{t('home.hero_title_2')}</span>
         </span>
       </h1>
     )}
 
-    <p class="mt-6 max-w-xl text-base md:text-lg text-paper/80 leading-relaxed">
+    <p class="mt-4 max-w-md text-sm md:text-base text-paper/80 leading-relaxed">
       {t('home.hero_subtitle')}
     </p>
 
-    <div class="mt-7 flex flex-wrap gap-3">
+    <div class="mt-5 flex flex-wrap gap-2.5">
       <a
         href={localizedPath('/work', lang)}
-        class="group relative inline-flex items-center gap-3 px-6 py-3 rounded-full bg-magenta-500 text-paper font-medium overflow-hidden transition-transform hover:-translate-y-0.5"
+        class="group relative inline-flex items-center gap-2.5 px-5 py-2.5 text-sm rounded-full bg-magenta-500 text-paper font-medium overflow-hidden transition-transform hover:-translate-y-0.5"
       >
         <span class="relative z-10">{t('home.hero_cta_work')}</span>
-        <span class="relative z-10 size-2 rounded-full bg-sun-500"></span>
+        <span class="relative z-10 size-1.5 rounded-full bg-sun-500"></span>
         <span class="absolute inset-0 bg-fire-500 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></span>
       </a>
       <a
         href={localizedPath('/contact', lang)}
-        class="group inline-flex items-center gap-3 px-6 py-3 rounded-full border border-paper/30 text-paper font-medium transition-all hover:border-sun-500 hover:text-sun-500"
+        class="group inline-flex items-center gap-2.5 px-5 py-2.5 text-sm rounded-full border border-paper/30 text-paper font-medium transition-all hover:border-sun-500 hover:text-sun-500"
       >
         {t('home.hero_cta_contact')}
         <span class="transition-transform group-hover:translate-x-1">→</span>
@@ -70,8 +70,8 @@ const hasMedia = heroMedia && heroMedia !== 'home.hero_media' && heroMedia.lengt
   </div>
 
   <!-- Scroll hint -->
-  <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-paper/40 text-[10px] font-mono">
-    <span class="block w-px h-8 bg-gradient-to-b from-transparent to-paper/40"></span>
+  <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 text-paper/40 text-[9px] font-mono">
+    <span class="block w-px h-6 bg-gradient-to-b from-transparent to-paper/40"></span>
     <span class="uppercase tracking-widest">scroll</span>
   </div>
 </section>
