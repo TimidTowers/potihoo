@@ -7,7 +7,7 @@ description_en: Main character design and animation for a 2D short film.
   Exploration of gestures and facial rigging.
 category: characters
 year: 2025
-cover: /images/placeholder-portrait.svg
+cover: /images/placeholder-3.svg
 gallery:
   - /images/placeholder-1.svg
   - /images/placeholder-2.svg
