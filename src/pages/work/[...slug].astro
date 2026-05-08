@@ -95,12 +95,18 @@ const next = all[(idx + 1) % all.length];
       </div>
     </section>
 
-    <!-- Gallery -->
+    <!-- Gallery — vertical stack, respects each image's natural ratio -->
     {project.data.gallery.length > 0 && (
-      <section class="mx-auto max-w-7xl px-5 lg:px-10 pb-24 grid gap-6 md:grid-cols-2">
+      <section class="mx-auto max-w-3xl px-5 lg:px-10 pb-24 flex flex-col gap-6 md:gap-8">
         {project.data.gallery.map((src) => (
-          <div class="aspect-[4/5] rounded-2xl overflow-hidden bg-paper/5 reveal">
-            <img src={src} alt={title} loading="lazy" class="size-full object-cover" />
+          <div class="rounded-2xl overflow-hidden bg-paper/5 reveal">
+            <img
+              src={src}
+              alt={title}
+              loading="lazy"
+              decoding="async"
+              class="block w-full h-auto"
+            />
           </div>
         ))}
       </section>
