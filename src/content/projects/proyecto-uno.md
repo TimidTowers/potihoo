@@ -13,6 +13,7 @@ gallery:
   - /images/placeholder-2.svg
   - /images/placeholder-3.svg
   - /images/placeholder-2.svg
+  - /images/placeholder-portrait.svg
 role: Character Designer & Animator
 client: Proyecto personal
 tools:
