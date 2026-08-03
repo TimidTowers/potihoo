@@ -20,7 +20,7 @@ const projects = await getPublishedProjects();
 // Column is capped at ~60rem; mobile shows full width minus page padding.
 const SIZES = '(max-width: 640px) calc(100vw - 2.5rem), (max-width: 1024px) 88vw, 60rem';
 
-async function toItem(img: ImageMetadata, title: string, caption: string): Promise<GalleryItem> {
+async function toItem(img: ImageMetadata, title: string, caption: string, sectionLabel: string): Promise<GalleryItem> {
   const opt = await getImage({ src: img, widths: [640, 960, 1280, 1920], format: 'webp', quality: 82 });
   return {
     src: opt.src,
@@ -30,25 +30,27 @@ async function toItem(img: ImageMetadata, title: string, caption: string): Promi
     height: img.height,
     title,
     caption,
+    sectionLabel,
   };
 }
 
 const sections: GallerySection[] = [];
 for (const cat of CATEGORY_ORDER) {
+  const label = t(`work.categories.${cat}`);
   const items: GalleryItem[] = [];
   for (const p of projects.filter((p) => p.data.category === cat)) {
     const title = localizedTitle(p, lang);
     const fallback = localizedDescription(p, lang);
     // Projects without an explicit gallery contribute their cover image.
     if (p.data.gallery.length === 0) {
-      items.push(await toItem(p.data.cover, title, fallback));
+      items.push(await toItem(p.data.cover, title, fallback, label));
     } else {
       for (const g of p.data.gallery) {
-        items.push(await toItem(g.image, title, localizedCaption(g, lang) ?? fallback));
+        items.push(await toItem(g.image, title, localizedCaption(g, lang) ?? fallback, label));
       }
     }
   }
-  sections.push({ id: cat, label: t(`work.categories.${cat}`), items });
+  sections.push({ id: cat, label, items });
 }
 ---
 

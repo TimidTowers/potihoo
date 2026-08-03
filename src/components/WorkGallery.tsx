@@ -9,6 +9,8 @@ export interface GalleryItem {
   height: number;
   title: string;
   caption: string;
+  /** Category label shown as a chip above the image in the lightbox. */
+  sectionLabel: string;
 }
 
 export interface GallerySection {
@@ -200,12 +202,15 @@ export default function WorkGallery({ sections, emptyLabel, lang }: Props) {
               className="relative flex max-h-full w-full max-w-5xl flex-col items-center"
               onClick={(e) => e.stopPropagation()}
             >
+              <span className="mb-3 inline-block rounded-full bg-magenta-500 px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-paper">
+                {current.sectionLabel}
+              </span>
               <img
                 src={current.src}
                 srcSet={current.srcSet}
                 sizes="92vw"
                 alt={current.title}
-                className="max-h-[72vh] w-auto max-w-full rounded-xl object-contain"
+                className="max-h-[68vh] w-auto max-w-full rounded-xl object-contain"
               />
               <figcaption className="mt-5 w-full max-w-2xl text-center">
                 <p className="font-display text-xl font-semibold text-paper md:text-2xl">{current.title}</p>
