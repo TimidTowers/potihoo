@@ -14,16 +14,16 @@ tools:
   - Procreate
   - Photoshop
   - Illustrator
-  - Blender
+  - ClipStudioPaint
 experience:
   - role: Animadora 2D
-    org: Estudio placeholder
-    period: 2023 — actualidad
-  - role: Motion Designer freelance
-    org: Varios clientes
-    period: 2021 — 2023
+    org: "  "
+    period: "  "
+  - role: Animadora 3D
+    org: "  "
+    period: " "
 education:
   - title: Animación Digital
-    org: Instituto placeholder
-    period: 2019 — 2022
+    org: Universidad Latina Costa Rica
+    period: 2022 — 2026
 ---
