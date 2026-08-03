@@ -1,7 +1,7 @@
 ---
 lang: es
-name: Ana
-headline: Animadora digital · Diseñadora de personajes
+name: Ana Paula Torres Vilchez
+headline: Animadora digital 2D · Diseñadora de personajes · Animadora digital 3D
 bio: Soy Ana, animadora digital. Llevo años contando historias a 24 cuadros por
   segundo, especialmente con personajes que se sienten vivos. Trabajo en 2D,
   motion graphics y, de vez en cuando, me aventuro al 3D.
