@@ -2,6 +2,7 @@
 import Base from '@/layouts/Base.astro';
 import Hero from '@/components/Hero.astro';
 import Marquee from '@/components/Marquee.astro';
+import { Image } from 'astro:assets';
 import { getLangFromUrl, useTranslations, localizedPath } from '@/i18n/utils';
 import { getFeaturedProjects, localizedTitle } from '@/lib/projects';
 
@@ -26,11 +27,14 @@ const featured = await getFeaturedProjects();
             class="group block reveal overflow-hidden rounded-2xl bg-paper/5"
             aria-label={localizedTitle(p, lang)}
           >
-            <img
+            <Image
               src={p.data.cover}
               alt={localizedTitle(p, lang)}
+              widths={[640, 960, 1280, 1600]}
+              sizes="(max-width: 768px) calc(100vw - 2.5rem), 48rem"
+              format="webp"
+              quality={82}
               loading="lazy"
-              decoding="async"
               class="block w-full h-auto transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.02]"
             />
           </a>

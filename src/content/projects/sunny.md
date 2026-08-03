@@ -5,10 +5,14 @@ description: "Diseño y turnaround del personaje Sunny + escena clave 'Phase 2' 
 description_en: "Sunny character design + turntable + key scene 'Phase 2' with backgrounds and thumbnails."
 category: "characters"
 year: 2025
-cover: "/images/portfolio/sunny-turntable.png"
+cover: ../../assets/portfolio/sunny-turntable.png
 gallery:
-  - "/images/portfolio/sunny-turntable.png"
-  - "/images/portfolio/sunny-phase2.png"
+  - image: ../../assets/portfolio/sunny-turntable.png
+    caption: "Turntable de Sunny — 4 vistas"
+    caption_en: "Sunny turntable — 4 views"
+  - image: ../../assets/portfolio/sunny-phase2.png
+    caption: "Escena clave 'Phase 2': personajes, background y thumbnails"
+    caption_en: "Key scene 'Phase 2': characters, background and thumbnails"
 role: "Character Designer & Illustrator"
 client: "Proyecto personal"
 tools:

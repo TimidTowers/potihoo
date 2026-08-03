@@ -1,7 +1,8 @@
 ---
 import Base from '@/layouts/Base.astro';
+import { Image } from 'astro:assets';
 import { getLangFromUrl, useTranslations, localizedPath, type Lang } from '@/i18n/utils';
-import { getPublishedProjects, localizedTitle, localizedDescription } from '@/lib/projects';
+import { getPublishedProjects, localizedTitle, localizedDescription, localizedCaption } from '@/lib/projects';
 import { render } from 'astro:content';
 
 export async function getStaticPaths() {
@@ -54,11 +55,19 @@ const next = all[(idx + 1) % all.length];
 
     <!-- Cover -->
     <section class="mx-auto max-w-7xl px-5 lg:px-10 mt-16">
-      <div class="aspect-[16/10] rounded-3xl overflow-hidden bg-paper/5 reveal">
+      <div class="rounded-3xl overflow-hidden bg-paper/5 reveal">
         {project.data.video ? (
-          <video src={project.data.video} class="size-full object-cover" autoplay muted loop playsinline></video>
+          <video src={project.data.video} class="block w-full h-auto" autoplay muted loop playsinline></video>
         ) : (
-          <img src={project.data.cover} alt={title} class="size-full object-cover" />
+          <Image
+            src={project.data.cover}
+            alt={title}
+            widths={[640, 960, 1280, 1920]}
+            sizes="(max-width: 768px) calc(100vw - 2.5rem), 72rem"
+            format="webp"
+            quality={82}
+            class="block w-full h-auto"
+          />
         )}
       </div>
     </section>
@@ -98,16 +107,24 @@ const next = all[(idx + 1) % all.length];
     <!-- Gallery — vertical stack, respects each image's natural ratio -->
     {project.data.gallery.length > 0 && (
       <section class="mx-auto max-w-3xl px-5 lg:px-10 pb-24 flex flex-col gap-6 md:gap-8">
-        {project.data.gallery.map((src) => (
-          <div class="rounded-2xl overflow-hidden bg-paper/5 reveal">
-            <img
-              src={src}
-              alt={title}
-              loading="lazy"
-              decoding="async"
-              class="block w-full h-auto"
-            />
-          </div>
+        {project.data.gallery.map((g) => (
+          <figure class="reveal">
+            <div class="rounded-2xl overflow-hidden bg-paper/5">
+              <Image
+                src={g.image}
+                alt={localizedCaption(g, lang) ?? title}
+                widths={[640, 960, 1280, 1920]}
+                sizes="(max-width: 768px) calc(100vw - 2.5rem), 48rem"
+                format="webp"
+                quality={82}
+                loading="lazy"
+                class="block w-full h-auto"
+              />
+            </div>
+            {localizedCaption(g, lang) && (
+              <figcaption class="mt-2 text-sm text-paper/60">{localizedCaption(g, lang)}</figcaption>
+            )}
+          </figure>
         ))}
       </section>
     )}
