@@ -12,11 +12,13 @@ export interface BannerSlide {
 interface Props {
   slides: BannerSlide[];
   lang: 'es' | 'en';
+  /** Proporción ancho/alto de la franja (la del primer banner). */
+  ratio: number;
 }
 
 const INTERVAL_MS = 4500;
 
-export default function BannerCarousel({ slides, lang }: Props) {
+export default function BannerCarousel({ slides, lang, ratio }: Props) {
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
   const count = slides.length;
@@ -47,9 +49,9 @@ export default function BannerCarousel({ slides, lang }: Props) {
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
       >
-        {/* aspect-video mantiene la proporción real del arte; el max-h solo
-            recorta levemente en pantallas muy anchas para no comerse la página */}
-        <div className="relative aspect-video max-h-[640px] w-full">
+        {/* La franja toma la proporción real del banner, así no se recorta;
+            el max-h evita que se coma la página en pantallas muy anchas */}
+        <div className="relative max-h-[640px] w-full" style={{ aspectRatio: String(ratio) }}>
           {slides.map((s, i) => (
             <motion.img
               key={s.src}

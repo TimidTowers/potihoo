@@ -188,6 +188,16 @@
     width: 64px; height: 64px;
     border-color: var(--color-fire-500);
   }
+
+  /* En pantalla completa el cursor propio no se puede dibujar (queda fuera
+     de la capa fullscreen), así que devolvemos el cursor real del sistema. */
+  :fullscreen,
+  :fullscreen * { cursor: auto !important; }
+  :-webkit-full-screen,
+  :-webkit-full-screen * { cursor: auto !important; }
+
+  body:has(:fullscreen) .cursor-dot,
+  body:has(:fullscreen) .cursor-ring { opacity: 0 !important; }
 }
 
 @media (prefers-reduced-motion: reduce) {

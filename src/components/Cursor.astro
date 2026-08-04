@@ -38,5 +38,13 @@
       dot.style.opacity = '1';
       ring.style.opacity = '1';
     });
+
+    // En pantalla completa (video) el cursor propio no se dibuja: lo ocultamos
+    // y dejamos que el sistema muestre el suyo (ver :fullscreen en global.css)
+    document.addEventListener('fullscreenchange', () => {
+      const full = !!document.fullscreenElement;
+      dot.style.opacity = full ? '0' : '1';
+      ring.style.opacity = full ? '0' : '1';
+    });
   }
 </script>

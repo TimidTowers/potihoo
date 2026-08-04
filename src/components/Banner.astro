@@ -21,6 +21,10 @@ const slides = await Promise.all(
     };
   })
 );
+
+// La franja usa la proporción del primer banner para no recortar el arte.
+const first = settings.banner[0]?.image;
+const ratio = first ? first.width / first.height : 16 / 9;
 ---
 
 {slides.length > 0 && (
@@ -29,5 +33,6 @@ const slides = await Promise.all(
     transition:persist="site-banner"
     slides={slides}
     lang={lang}
+    ratio={ratio}
   />
 )}
