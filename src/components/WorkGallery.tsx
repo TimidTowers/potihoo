@@ -174,7 +174,6 @@ export default function WorkGallery({ sections, emptyLabel, lang }: Props) {
               className="mb-8 font-display text-4xl font-semibold tracking-tight md:mb-12 md:text-6xl"
             >
               {section.label}
-              <span className="text-magenta-500">.</span>
             </motion.h2>
             )}
 

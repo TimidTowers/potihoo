@@ -12,15 +12,15 @@ const a = about.data;
 ---
 
 <Base title={t('about.title')}>
-  <section class="mx-auto max-w-7xl px-5 lg:px-10 py-20 md:py-28">
+  <section class="mx-auto max-w-7xl px-5 lg:px-10 py-16 md:py-24 text-center">
     <p class="font-mono text-xs uppercase tracking-[0.3em] text-fire-500 mb-4">◆ {t('about.title')}</p>
-    <h1 class="font-display text-5xl md:text-8xl font-semibold tracking-tighter leading-[0.95]">
+    <h1 class="font-display text-5xl md:text-7xl font-semibold tracking-tighter leading-[0.95]">
       <span class="text-paper">{a.headline.split('·')[0].trim()}</span>
       {a.headline.includes('·') && (
         <span class="block text-gradient italic">{a.headline.split('·').slice(1).join(' · ').trim()}</span>
       )}
     </h1>
-    <p class="mt-10 max-w-2xl text-xl md:text-2xl text-paper/80 leading-relaxed">
+    <p class="mt-8 mx-auto max-w-2xl text-lg md:text-xl text-paper/80 leading-relaxed">
       {a.bio}
     </p>
   </section>

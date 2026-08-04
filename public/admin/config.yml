@@ -1,22 +1,22 @@
 # =====================================================================
-# potihoo · Decap CMS configuration
-# Panel: https://potihoo.vercel.app/admin/
-# Edita texto, sube imágenes y agrega proyectos sin tocar código.
+# potihoo · Panel de edición (Decap CMS)
+# https://potihoo.vercel.app/admin/
+# Todo lo que se ve en la web se edita desde acá.
 # =====================================================================
 
 backend:
   name: github
   repo: TimidTowers/potihoo
   branch: main
-  base_url: https://potihoo.vercel.app    # OAuth proxy live en /api/* del mismo proyecto
+  base_url: https://potihoo.vercel.app
   auth_endpoint: api/auth
 
 # Para edición local (requiere `npx decap-server` corriendo):
 # local_backend: true
 
-# Borradores antes de publicar: guardar deja el cambio "In review",
-# y solo al pasar a "Ready" + Publish se publica en el sitio.
+# Guardar deja el cambio como borrador; se publica desde la pestaña "Flujo".
 publish_mode: editorial_workflow
+
 media_folder: "public/images"
 public_folder: "/images"
 
@@ -26,6 +26,46 @@ logo_url: /favicon.svg
 locale: es
 
 collections:
+  # -------------------------------------------------------------------
+  # Ajustes generales: banner, email y redes
+  # -------------------------------------------------------------------
+  - name: "settings"
+    label: "Ajustes del sitio"
+    files:
+      - label: "Banner, email y redes"
+        name: "site"
+        file: "src/content/settings/site.yml"
+        format: "yaml"
+        media_folder: "/src/assets/banner"
+        public_folder: "../../assets/banner"
+        fields:
+          - label: "Email de contacto"
+            name: "email"
+            widget: "string"
+            hint: "Se muestra en el pie de página y en la página de Contacto."
+          - label: "Banner (arrastra ⋮⋮ para reordenar)"
+            name: "banner"
+            widget: "list"
+            label_singular: "imagen del banner"
+            summary: "{{fields.alt}}"
+            hint: "Se ve arriba de todas las páginas. Con 2 o más imágenes se convierte en carrusel automático. Ideal 1920×1080."
+            fields:
+              - { label: "Imagen", name: "image", widget: "image" }
+              - label: "Texto alternativo"
+                name: "alt"
+                widget: "string"
+                required: false
+                hint: "Describe la imagen para lectores de pantalla y buscadores."
+          - label: "Redes sociales"
+            name: "socials"
+            widget: "list"
+            label_singular: "red social"
+            summary: "{{fields.label}} — {{fields.handle}}"
+            fields:
+              - { label: "Nombre", name: "label", widget: "string", hint: "Ej: Instagram" }
+              - { label: "Usuario", name: "handle", widget: "string", required: false, hint: "Ej: @potihoo" }
+              - { label: "Enlace", name: "url", widget: "string", hint: "URL completa, con https://" }
+
   # -------------------------------------------------------------------
   # Proyectos del portafolio
   # -------------------------------------------------------------------
@@ -37,8 +77,7 @@ collections:
     slug: "{{slug}}"
     summary: "{{title}} — {{category}} · {{year}}"
     sortable_fields: ["order", "year", "title"]
-    # Las imágenes de proyectos viven en src/assets para que Astro las optimice.
-    # public_folder relativo → Decap guarda rutas relativas al .md (../../assets/...).
+    # Las imágenes viven en src/assets para que Astro las optimice.
     media_folder: "/src/assets/portfolio"
     public_folder: "../../assets/portfolio"
     view_filters:
@@ -49,41 +88,82 @@ collections:
         field: draft
         pattern: true
     fields:
-      - { label: "Título (Español)", name: "title",          widget: "string" }
-      - { label: "Título (English)", name: "title_en",       widget: "string", required: false }
-      - { label: "Descripción (Español)", name: "description",    widget: "text" }
-      - { label: "Descripción (English)", name: "description_en", widget: "text", required: false }
+      - label: "Título"
+        name: "title"
+        widget: "string"
+      - label: "Título en inglés"
+        name: "title_en"
+        widget: "string"
+        required: false
+        hint: "Si lo dejas vacío se traduce solo."
+      - label: "Descripción"
+        name: "description"
+        widget: "text"
+        hint: "Aparece al ampliar una imagen que no tenga su propia descripción."
+      - label: "Descripción en inglés"
+        name: "description_en"
+        widget: "text"
+        required: false
+        hint: "Si la dejas vacía se traduce sola."
       - label: "Categoría"
         name: "category"
         widget: "select"
+        hint: "Define en qué sección del menú aparece."
         options:
-          - { label: "Animación",           value: "animation" }
+          - { label: "Animación", value: "animation" }
           - { label: "Diseño de personajes", value: "characters" }
-          - { label: "Ilustración",         value: "illustration" }
-          - { label: "Diseño de fondos",    value: "backgrounds" }
-      - { label: "Año",            name: "year",     widget: "number", value_type: "int", min: 2000, max: 2100 }
-      - { label: "Imagen portada", name: "cover",    widget: "image" }
+          - { label: "Ilustración", value: "illustration" }
+          - { label: "Diseño de fondos", value: "backgrounds" }
+      - { label: "Año", name: "year", widget: "number", value_type: "int", min: 2000, max: 2100 }
+      - label: "Imagen de portada"
+        name: "cover"
+        widget: "image"
+        hint: "Se usa si el proyecto no tiene galería."
       - label: "Galería (arrastra ⋮⋮ para reordenar)"
         name: "gallery"
         widget: "list"
+        label_singular: "imagen"
         required: false
         summary: "{{fields.caption}}"
+        hint: "Estas imágenes forman la tira vertical de la categoría, en este orden."
         fields:
           - { label: "Imagen", name: "image", widget: "image" }
-          - { label: "Descripción corta (Español) — se ve al ampliar la imagen", name: "caption", widget: "string", required: false }
-          - { label: "Short description (English)", name: "caption_en", widget: "string", required: false }
-      - { label: "Video (URL — Vimeo, YouTube, mp4)", name: "video", widget: "string", required: false }
-      - { label: "Rol",            name: "role",     widget: "string", required: false }
-      - { label: "Cliente",        name: "client",   widget: "string", required: false }
+          - label: "Descripción corta"
+            name: "caption"
+            widget: "string"
+            required: false
+            hint: "Se muestra al ampliar la imagen."
+          - label: "Descripción corta en inglés"
+            name: "caption_en"
+            widget: "string"
+            required: false
+            hint: "Si la dejas vacía se traduce sola."
+      - { label: "Video (URL de Vimeo, YouTube o .mp4)", name: "video", widget: "string", required: false }
+      - { label: "Rol", name: "role", widget: "string", required: false }
+      - { label: "Cliente", name: "client", widget: "string", required: false }
       - label: "Herramientas"
         name: "tools"
         widget: "list"
+        label_singular: "herramienta"
         required: false
         default: []
-      - { label: "Destacado en la home", name: "featured", widget: "boolean", default: false }
-      - { label: "Borrador (no publicar)", name: "draft", widget: "boolean", default: false }
-      - { label: "Orden de aparición",     name: "order", widget: "number", value_type: "int", default: 0, min: 0 }
-      - { label: "Contenido",      name: "body",     widget: "markdown" }
+      - { label: "Destacado", name: "featured", widget: "boolean", default: false }
+      - label: "Borrador (no se publica)"
+        name: "draft"
+        widget: "boolean"
+        default: false
+      - label: "Orden"
+        name: "order"
+        widget: "number"
+        value_type: "int"
+        default: 0
+        min: 0
+        hint: "Número más bajo aparece primero dentro de su categoría."
+      - label: "Texto largo"
+        name: "body"
+        widget: "markdown"
+        required: false
+        hint: "Opcional. Solo se ve en la página individual del proyecto."
 
   # -------------------------------------------------------------------
   # Página "Sobre mí" (una entrada por idioma)
@@ -94,6 +174,7 @@ collections:
     create: false
     slug: "{{lang}}"
     identifier_field: "lang"
+    summary: "{{lang}} — {{name}}"
     fields:
       - label: "Idioma"
         name: "lang"
@@ -101,32 +182,40 @@ collections:
         options:
           - { label: "Español", value: "es" }
           - { label: "English", value: "en" }
-      - { label: "Nombre",   name: "name",     widget: "string" }
-      - { label: "Headline", name: "headline", widget: "string" }
-      - { label: "Bio",      name: "bio",      widget: "text" }
+      - { label: "Nombre", name: "name", widget: "string" }
+      - label: "Titular"
+        name: "headline"
+        widget: "string"
+        hint: "Separa con · para que la segunda parte salga en color."
+      - { label: "Bio", name: "bio", widget: "text" }
       - { label: "Cómo trabajo", name: "approach", widget: "text" }
-      - { label: "Retrato",  name: "portrait", widget: "image", required: false }
+      - { label: "Foto", name: "portrait", widget: "image", required: false }
       - label: "Herramientas"
         name: "tools"
         widget: "list"
+        label_singular: "herramienta"
         default: []
       - label: "Experiencia"
         name: "experience"
         widget: "list"
+        label_singular: "puesto"
+        summary: "{{fields.role}} — {{fields.org}}"
         fields:
-          - { label: "Rol",     name: "role",   widget: "string" }
-          - { label: "Empresa", name: "org",    widget: "string" }
+          - { label: "Rol", name: "role", widget: "string" }
+          - { label: "Lugar", name: "org", widget: "string" }
           - { label: "Periodo", name: "period", widget: "string" }
       - label: "Educación"
         name: "education"
         widget: "list"
+        label_singular: "estudio"
+        summary: "{{fields.title}} — {{fields.org}}"
         fields:
-          - { label: "Título",  name: "title",  widget: "string" }
-          - { label: "Centro",  name: "org",    widget: "string" }
+          - { label: "Título", name: "title", widget: "string" }
+          - { label: "Centro", name: "org", widget: "string" }
           - { label: "Periodo", name: "period", widget: "string" }
 
   # -------------------------------------------------------------------
-  # Textos de la interfaz (i18n)
+  # Textos de la interfaz (menús, botones, etiquetas)
   # -------------------------------------------------------------------
   - name: "i18n"
     label: "Textos del sitio"
@@ -136,157 +225,136 @@ collections:
         file: "src/i18n/es.json"
         format: "json"
         fields:
-          - { label: "Site",    name: "site",    widget: "object", fields: [
-              { label: "Nombre",   name: "name",    widget: "string" },
-              { label: "Tagline",  name: "tagline", widget: "string" }
-          ]}
-          - { label: "Nav",     name: "nav",     widget: "object", fields: [
-              { label: "Inicio",   name: "home",    widget: "string" },
-              { label: "Sobre mí", name: "about",   widget: "string" },
-              { label: "Trabajo",  name: "work",    widget: "string" },
-              { label: "Contacto", name: "contact", widget: "string" }
-          ]}
-          - { label: "Home", name: "home", widget: "object", fields: [
-              { label: "Hero — eyebrow", name: "hero_eyebrow", widget: "string" },
-              { label: "Hero — title 1", name: "hero_title_1", widget: "string" },
-              { label: "Hero — title 2", name: "hero_title_2", widget: "string" },
-              { label: "Hero — GIF / imagen (reemplaza el título si se sube)", name: "hero_media", widget: "image", required: false, allow_multiple: false, media_library: { config: { multiple: false } } },
-              { label: "Hero — texto alternativo (accesibilidad)", name: "hero_media_alt", widget: "string", required: false },
-              { label: "Hero — subtítulo", name: "hero_subtitle", widget: "text" },
-              { label: "CTA: Ver trabajo", name: "hero_cta_work", widget: "string" },
-              { label: "CTA: Contacto",    name: "hero_cta_contact", widget: "string" },
-              { label: "Marquee",          name: "marquee", widget: "string" },
-              { label: "Featured — título", name: "featured_title", widget: "string" },
-              { label: "Featured — subtítulo", name: "featured_subtitle", widget: "string" },
-              { label: "Ver todo",  name: "view_all", widget: "string" },
-              { label: "About — eyebrow", name: "about_eyebrow", widget: "string" },
-              { label: "About — título",  name: "about_title", widget: "string" },
-              { label: "About — texto",   name: "about_text", widget: "text" },
-              { label: "About — CTA",     name: "about_cta", widget: "string" }
-          ]}
-          - { label: "About",   name: "about",   widget: "object", fields: [
-              { label: "Título",       name: "title",            widget: "string" },
-              { label: "Intro",        name: "intro",            widget: "text" },
-              { label: "Bio título",   name: "bio_title",        widget: "string" },
-              { label: "Bio texto",    name: "bio_text",         widget: "text" },
-              { label: "Approach título", name: "approach_title", widget: "string" },
-              { label: "Approach texto",  name: "approach_text",  widget: "text" },
-              { label: "Tools título",   name: "tools_title",     widget: "string" },
-              { label: "Experience título", name: "experience_title", widget: "string" },
-              { label: "Education título", name: "education_title",  widget: "string" },
-              { label: "Contact CTA",  name: "contact_cta",     widget: "string" }
-          ]}
-          - { label: "Work",    name: "work",    widget: "object", fields: [
-              { label: "Título",    name: "title",    widget: "string" },
-              { label: "Subtítulo", name: "subtitle", widget: "text" },
-              { label: "Categorías",   name: "categories", widget: "object", fields: [
-                  { label: "Animación",            name: "animation",    widget: "string" },
-                  { label: "Diseño de personajes", name: "characters",   widget: "string" },
-                  { label: "Ilustración",          name: "illustration", widget: "string" },
-                  { label: "Diseño de fondos",     name: "backgrounds",  widget: "string" }
-              ]},
-              { label: "Sin proyectos", name: "no_projects", widget: "string" },
-              { label: "Volver",        name: "back",        widget: "string" },
-              { label: "Año",           name: "year",        widget: "string" },
-              { label: "Rol",           name: "role",        widget: "string" },
-              { label: "Tools",         name: "tools",       widget: "string" },
-              { label: "Cliente",       name: "client",      widget: "string" }
-          ]}
-          - { label: "Contact", name: "contact", widget: "object", fields: [
-              { label: "Título",      name: "title",       widget: "string" },
-              { label: "Subtítulo",   name: "subtitle",    widget: "text" },
-              { label: "Email label", name: "email_label", widget: "string" },
-              { label: "Social label", name: "social_label", widget: "string" },
-              { label: "Form",        name: "form",        widget: "object", fields: [
-                  { label: "Nombre",   name: "name",    widget: "string" },
-                  { label: "Email",    name: "email",   widget: "string" },
-                  { label: "Mensaje",  name: "message", widget: "string" },
-                  { label: "Enviar",   name: "submit",  widget: "string" },
-                  { label: "Éxito",    name: "success", widget: "string" },
-                  { label: "Error",    name: "error",   widget: "string" }
-              ]}
-          ]}
-          - { label: "Footer",  name: "footer",  widget: "object", fields: [
-              { label: "Derechos",      name: "rights",    widget: "string" },
-              { label: "Hecho con...",  name: "made_with", widget: "string" }
-          ]}
+          - label: "Sitio"
+            name: "site"
+            widget: "object"
+            fields:
+              - { label: "Nombre", name: "name", widget: "string" }
+              - { label: "Descripción corta", name: "tagline", widget: "string" }
+          - label: "Menú"
+            name: "nav"
+            widget: "object"
+            fields:
+              - { label: "Sobre mí", name: "about", widget: "string" }
+              - { label: "Contacto", name: "contact", widget: "string" }
+          - label: "Sobre mí"
+            name: "about"
+            widget: "object"
+            fields:
+              - { label: "Título", name: "title", widget: "string" }
+              - { label: "Título de «Cómo trabajo»", name: "approach_title", widget: "string" }
+              - { label: "Título de «Herramientas»", name: "tools_title", widget: "string" }
+              - { label: "Título de «Experiencia»", name: "experience_title", widget: "string" }
+              - { label: "Título de «Educación»", name: "education_title", widget: "string" }
+              - { label: "Botón de contacto", name: "contact_cta", widget: "string" }
+          - label: "Trabajo"
+            name: "work"
+            widget: "object"
+            fields:
+              - { label: "Aviso de sección vacía", name: "no_projects", widget: "string" }
+              - { label: "Enlace «volver»", name: "back", widget: "string" }
+              - { label: "Etiqueta «Rol»", name: "role", widget: "string" }
+              - { label: "Etiqueta «Herramientas»", name: "tools", widget: "string" }
+              - { label: "Etiqueta «Cliente»", name: "client", widget: "string" }
+              - label: "Nombres de las categorías"
+                name: "categories"
+                widget: "object"
+                hint: "Cambia cómo se llaman en el menú y en los títulos."
+                fields:
+                  - { label: "Animación", name: "animation", widget: "string" }
+                  - { label: "Diseño de personajes", name: "characters", widget: "string" }
+                  - { label: "Ilustración", name: "illustration", widget: "string" }
+                  - { label: "Diseño de fondos", name: "backgrounds", widget: "string" }
+          - label: "Contacto"
+            name: "contact"
+            widget: "object"
+            fields:
+              - { label: "Título", name: "title", widget: "string" }
+              - { label: "Subtítulo", name: "subtitle", widget: "text" }
+              - { label: "Etiqueta del email", name: "email_label", widget: "string" }
+              - { label: "Etiqueta de redes", name: "social_label", widget: "string" }
+              - label: "Formulario"
+                name: "form"
+                widget: "object"
+                fields:
+                  - { label: "Campo nombre", name: "name", widget: "string" }
+                  - { label: "Campo email", name: "email", widget: "string" }
+                  - { label: "Campo mensaje", name: "message", widget: "string" }
+                  - { label: "Botón enviar", name: "submit", widget: "string" }
+                  - { label: "Mensaje de éxito", name: "success", widget: "string" }
+                  - { label: "Mensaje de error", name: "error", widget: "string" }
+          - label: "Pie de página"
+            name: "footer"
+            widget: "object"
+            fields:
+              - { label: "Derechos", name: "rights", widget: "string" }
+              - { label: "Frase final", name: "made_with", widget: "string" }
 
       - label: "English"
         name: "en"
         file: "src/i18n/en.json"
         format: "json"
         fields:
-          - { label: "Site",    name: "site",    widget: "object", fields: [
-              { label: "Name",     name: "name",    widget: "string" },
-              { label: "Tagline",  name: "tagline", widget: "string" }
-          ]}
-          - { label: "Nav",     name: "nav",     widget: "object", fields: [
-              { label: "Home",    name: "home",    widget: "string" },
-              { label: "About",   name: "about",   widget: "string" },
-              { label: "Work",    name: "work",    widget: "string" },
-              { label: "Contact", name: "contact", widget: "string" }
-          ]}
-          - { label: "Home", name: "home", widget: "object", fields: [
-              { label: "Hero — eyebrow",   name: "hero_eyebrow",  widget: "string" },
-              { label: "Hero — title 1",   name: "hero_title_1",  widget: "string" },
-              { label: "Hero — title 2",   name: "hero_title_2",  widget: "string" },
-              { label: "Hero — GIF / image (replaces the title if uploaded)", name: "hero_media", widget: "image", required: false, allow_multiple: false, media_library: { config: { multiple: false } } },
-              { label: "Hero — alt text (accessibility)", name: "hero_media_alt", widget: "string", required: false },
-              { label: "Hero — subtitle",  name: "hero_subtitle", widget: "text" },
-              { label: "CTA: See work",    name: "hero_cta_work", widget: "string" },
-              { label: "CTA: Contact",     name: "hero_cta_contact", widget: "string" },
-              { label: "Marquee",          name: "marquee", widget: "string" },
-              { label: "Featured — title", name: "featured_title", widget: "string" },
-              { label: "Featured — subtitle", name: "featured_subtitle", widget: "string" },
-              { label: "View all", name: "view_all", widget: "string" },
-              { label: "About — eyebrow",  name: "about_eyebrow", widget: "string" },
-              { label: "About — title",    name: "about_title",   widget: "string" },
-              { label: "About — text",     name: "about_text",    widget: "text" },
-              { label: "About — CTA",      name: "about_cta",     widget: "string" }
-          ]}
-          - { label: "About",   name: "about",   widget: "object", fields: [
-              { label: "Title", name: "title", widget: "string" },
-              { label: "Intro", name: "intro", widget: "text" },
-              { label: "Bio title", name: "bio_title", widget: "string" },
-              { label: "Bio text",  name: "bio_text",  widget: "text" },
-              { label: "Approach title", name: "approach_title", widget: "string" },
-              { label: "Approach text",  name: "approach_text",  widget: "text" },
-              { label: "Tools title",    name: "tools_title",    widget: "string" },
-              { label: "Experience title", name: "experience_title", widget: "string" },
-              { label: "Education title",  name: "education_title",  widget: "string" },
-              { label: "Contact CTA", name: "contact_cta", widget: "string" }
-          ]}
-          - { label: "Work",    name: "work",    widget: "object", fields: [
-              { label: "Title",    name: "title",    widget: "string" },
-              { label: "Subtitle", name: "subtitle", widget: "text" },
-              { label: "Categories",  name: "categories", widget: "object", fields: [
-                  { label: "Animation",        name: "animation",    widget: "string" },
-                  { label: "Character design", name: "characters",   widget: "string" },
-                  { label: "Illustration",     name: "illustration", widget: "string" },
-                  { label: "Background design", name: "backgrounds", widget: "string" }
-              ]},
-              { label: "No projects", name: "no_projects", widget: "string" },
-              { label: "Back",        name: "back",        widget: "string" },
-              { label: "Year",        name: "year",        widget: "string" },
-              { label: "Role",        name: "role",        widget: "string" },
-              { label: "Tools",       name: "tools",       widget: "string" },
-              { label: "Client",      name: "client",      widget: "string" }
-          ]}
-          - { label: "Contact", name: "contact", widget: "object", fields: [
-              { label: "Title",       name: "title",       widget: "string" },
-              { label: "Subtitle",    name: "subtitle",    widget: "text" },
-              { label: "Email label", name: "email_label", widget: "string" },
-              { label: "Social label", name: "social_label", widget: "string" },
-              { label: "Form",        name: "form",        widget: "object", fields: [
-                  { label: "Name",    name: "name",    widget: "string" },
-                  { label: "Email",   name: "email",   widget: "string" },
-                  { label: "Message", name: "message", widget: "string" },
-                  { label: "Submit",  name: "submit",  widget: "string" },
-                  { label: "Success", name: "success", widget: "string" },
-                  { label: "Error",   name: "error",   widget: "string" }
-              ]}
-          ]}
-          - { label: "Footer",  name: "footer",  widget: "object", fields: [
-              { label: "Rights",    name: "rights",    widget: "string" },
-              { label: "Made with", name: "made_with", widget: "string" }
-          ]}
+          - label: "Site"
+            name: "site"
+            widget: "object"
+            fields:
+              - { label: "Name", name: "name", widget: "string" }
+              - { label: "Tagline", name: "tagline", widget: "string" }
+          - label: "Menu"
+            name: "nav"
+            widget: "object"
+            fields:
+              - { label: "About", name: "about", widget: "string" }
+              - { label: "Contact", name: "contact", widget: "string" }
+          - label: "About"
+            name: "about"
+            widget: "object"
+            fields:
+              - { label: "Title", name: "title", widget: "string" }
+              - { label: "«How I work» title", name: "approach_title", widget: "string" }
+              - { label: "«Tools» title", name: "tools_title", widget: "string" }
+              - { label: "«Experience» title", name: "experience_title", widget: "string" }
+              - { label: "«Education» title", name: "education_title", widget: "string" }
+              - { label: "Contact button", name: "contact_cta", widget: "string" }
+          - label: "Work"
+            name: "work"
+            widget: "object"
+            fields:
+              - { label: "Empty section notice", name: "no_projects", widget: "string" }
+              - { label: "«Back» link", name: "back", widget: "string" }
+              - { label: "«Role» label", name: "role", widget: "string" }
+              - { label: "«Tools» label", name: "tools", widget: "string" }
+              - { label: "«Client» label", name: "client", widget: "string" }
+              - label: "Category names"
+                name: "categories"
+                widget: "object"
+                fields:
+                  - { label: "Animation", name: "animation", widget: "string" }
+                  - { label: "Character design", name: "characters", widget: "string" }
+                  - { label: "Illustration", name: "illustration", widget: "string" }
+                  - { label: "Background design", name: "backgrounds", widget: "string" }
+          - label: "Contact"
+            name: "contact"
+            widget: "object"
+            fields:
+              - { label: "Title", name: "title", widget: "string" }
+              - { label: "Subtitle", name: "subtitle", widget: "text" }
+              - { label: "Email label", name: "email_label", widget: "string" }
+              - { label: "Socials label", name: "social_label", widget: "string" }
+              - label: "Form"
+                name: "form"
+                widget: "object"
+                fields:
+                  - { label: "Name field", name: "name", widget: "string" }
+                  - { label: "Email field", name: "email", widget: "string" }
+                  - { label: "Message field", name: "message", widget: "string" }
+                  - { label: "Submit button", name: "submit", widget: "string" }
+                  - { label: "Success message", name: "success", widget: "string" }
+                  - { label: "Error message", name: "error", widget: "string" }
+          - label: "Footer"
+            name: "footer"
+            widget: "object"
+            fields:
+              - { label: "Rights", name: "rights", widget: "string" }
+              - { label: "Closing line", name: "made_with", widget: "string" }

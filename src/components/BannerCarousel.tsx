@@ -6,17 +6,17 @@ export interface BannerSlide {
   srcSet: string;
   width: number;
   height: number;
+  alt: string;
 }
 
 interface Props {
   slides: BannerSlide[];
-  alt: string;
   lang: 'es' | 'en';
 }
 
 const INTERVAL_MS = 4500;
 
-export default function BannerCarousel({ slides, alt, lang }: Props) {
+export default function BannerCarousel({ slides, lang }: Props) {
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
   const count = slides.length;
@@ -58,7 +58,7 @@ export default function BannerCarousel({ slides, alt, lang }: Props) {
               sizes="100vw"
               width={s.width}
               height={s.height}
-              alt={i === active ? alt : ''}
+              alt={i === active ? s.alt : ''}
               loading={i === 0 ? 'eager' : 'lazy'}
               decoding="async"
               initial={false}

@@ -4,56 +4,29 @@
     "tagline": "Digital animation · Character design · Illustration"
   },
   "nav": {
-    "home": "Home",
     "about": "About",
-    "work": "Work",
     "contact": "Contact"
-  },
-  "home": {
-    "hero_eyebrow": "Portfolio · 2025",
-    "hero_title_1": "Animation",
-    "hero_title_2": "that breathes.",
-    "hero_media": "",
-    "hero_media_alt": "",
-    "hero_subtitle": "I'm Ana, digital animator. I make characters, worlds and motion that tell stories.",
-    "hero_cta_work": "See work",
-    "hero_cta_contact": "Get in touch",
-    "marquee": "Character design · 2D animation · Motion · Illustration · Storyboard · Concept art ·",
-    "featured_title": "Featured work",
-    "featured_subtitle": "A selection of recent projects",
-    "view_all": "See all work",
-    "about_eyebrow": "About",
-    "about_title": "Hi, I'm Ana.",
-    "about_text": "Digital animator focused on character design and expressive movement. I mainly work in 2D, with detours into 3D and motion graphics. I love the crossover between absurd and tender.",
-    "about_cta": "Learn more"
   },
   "about": {
     "title": "About me",
-    "intro": "I'm Ana, digital animator based somewhere on this planet. I've spent years telling stories at 24 frames per second.",
-    "bio_title": "Bio",
-    "bio_text": "I started drawing characters in school notebooks and never stopped. I studied digital animation and since then I've been working on personal and commercial projects mixing character design, 2D animation and motion graphics.",
     "approach_title": "How I work",
-    "approach_text": "Every project starts with a character. A gesture, a look, a way of walking. Then I build the world around them.",
     "tools_title": "Tools",
     "experience_title": "Experience",
     "education_title": "Education",
     "contact_cta": "Let's work together"
   },
   "work": {
-    "title": "Work",
-    "subtitle": "A curated collection of animation, character design and illustration.",
+    "no_projects": "New projects coming soon.",
+    "back": "Back to work",
+    "role": "Role",
+    "tools": "Tools",
+    "client": "Client",
     "categories": {
       "animation": "Animation",
       "characters": "Character design",
       "illustration": "Illustration",
       "backgrounds": "Background design"
-    },
-    "no_projects": "New projects coming soon.",
-    "back": "Back to work",
-    "year": "Year",
-    "role": "Role",
-    "tools": "Tools",
-    "client": "Client"
+    }
   },
   "contact": {
     "title": "Let's talk",

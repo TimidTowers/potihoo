@@ -4,56 +4,29 @@
     "tagline": "Animación digital · Diseño de personajes · Ilustración"
   },
   "nav": {
-    "home": "Inicio",
     "about": "Sobre mí",
-    "work": "Trabajo",
     "contact": "Contacto"
   },
-  "home": {
-    "marquee": "Character design · 2D animation · Motion · Illustration · Storyboard · Concept art ·",
-    "hero_eyebrow": "Portafolio · 2025",
-    "hero_title_1": "Animación",
-    "hero_cta_work": "Ver trabajo",
-    "hero_title_2": "que respira.",
-    "about_title": "Hola, soy Ana.",
-    "view_all": "Ver todo el trabajo",
-    "featured_title": "Trabajo destacado",
-    "hero_media_alt": "",
-    "featured_subtitle": "Una selección de proyectos recientes",
-    "hero_cta_contact": "Hablemos",
-    "about_eyebrow": "Sobre mí",
-    "hero_subtitle": "Soy Ana, animadora digital. Creo personajes, mundos y movimiento que cuentan historias.",
-    "about_cta": "Conoce más",
-    "about_text": "Animadora digital enfocada en diseño de personajes y movimiento expresivo. Trabajo principalmente en 2D, con incursiones en 3D y motion graphics. Me interesa el cruce entre lo absurdo y lo tierno.",
-    "hero_media": ""
-  },
   "about": {
-    "bio_title": "Bio",
-    "education_title": "Educación",
+    "title": "Sobre mí",
     "approach_title": "Cómo trabajo",
-    "experience_title": "Experiencia",
-    "bio_text": "Empecé dibujando personajes en cuadernos del colegio y nunca paré. Estudié animación digital y desde entonces trabajo en proyectos personales y comerciales que combinan diseño de personajes, animación 2D y motion graphics.",
-    "approach_text": "Cada proyecto empieza con un personaje. Un gesto, una mirada, una forma de caminar. Después construyo el mundo alrededor.",
-    "intro": "Soy Ana, animadora digital con base en algún rincón del mundo. Llevo años contando historias a 24 cuadros por segundo.",
-    "contact_cta": "Trabajemos juntos",
     "tools_title": "Herramientas",
-    "title": "Sobre mí"
+    "experience_title": "Experiencia",
+    "education_title": "Educación",
+    "contact_cta": "Trabajemos juntos"
   },
   "work": {
-    "back": "Volver al trabajo",
-    "client": "Cliente",
-    "role": "Rol",
-    "subtitle": "Una colección curada de animación, diseño de personajes e ilustración.",
     "no_projects": "Pronto habrá nuevos proyectos aquí.",
-    "title": "Trabajo",
+    "back": "Volver al trabajo",
+    "role": "Rol",
     "tools": "Herramientas",
+    "client": "Cliente",
     "categories": {
       "animation": "Animación",
       "characters": "Diseño de personajes",
       "illustration": "Ilustración",
       "backgrounds": "Diseño de fondos"
-    },
-    "year": "Año"
+    }
   },
   "contact": {
     "title": "Hablemos",

@@ -54,4 +54,30 @@ const about = defineCollection({
   }),
 });
 
-export const collections = { projects, about };
+/** Ajustes globales editables desde el CMS (banner, email, redes). */
+const settings = defineCollection({
+  loader: glob({ pattern: '*.{yml,yaml,json}', base: './src/content/settings' }),
+  schema: ({ image }) =>
+    z.object({
+      email: z.string(),
+      banner: z
+        .array(
+          z.object({
+            image: image(),
+            alt: z.string().optional(),
+          })
+        )
+        .default([]),
+      socials: z
+        .array(
+          z.object({
+            label: z.string(),
+            handle: z.string().optional(),
+            url: z.string(),
+          })
+        )
+        .default([]),
+    }),
+});
+
+export const collections = { projects, about, settings };
