@@ -81,12 +81,12 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <script>
       import Lenis from 'lenis';
 
-      let lenis;
+      let lenis: Lenis | undefined;
       const start = () => {
         if (lenis || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
         lenis = new Lenis({ lerp: 0.07, smoothWheel: true });
-        const raf = (t) => {
-          lenis.raf(t);
+        const raf = (t: number) => {
+          lenis?.raf(t);
           requestAnimationFrame(raf);
         };
         requestAnimationFrame(raf);

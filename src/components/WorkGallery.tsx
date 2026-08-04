@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { AnimatePresence, motion, MotionConfig } from 'motion/react';
+import { animate, AnimatePresence, motion, MotionConfig, useMotionValue } from 'motion/react';
 
 export interface GalleryItem {
   src: string;
@@ -30,15 +30,21 @@ const EASE = [0.22, 1, 0.36, 1] as const;
 export default function WorkGallery({ sections, emptyLabel, lang }: Props) {
   const [activeId, setActiveId] = useState(sections[0]?.id ?? '');
   const [modalIndex, setModalIndex] = useState<number | null>(null);
+  const [zoom, setZoom] = useState(1);
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
+  const zoomFrameRef = useRef<HTMLDivElement>(null);
+  // Motion values compartidos entre el zoom programático y el arrastre (pan)
+  const scaleMV = useMotionValue(1);
+  const xMV = useMotionValue(0);
+  const yMV = useMotionValue(0);
   // Single-category mode: the page supplies its own header, so no tabs/h2 here.
   const single = sections.length === 1;
 
   const t = useMemo(
     () =>
       lang === 'en'
-        ? { close: 'Close', prev: 'Previous', next: 'Next', open: 'Open image' }
-        : { close: 'Cerrar', prev: 'Anterior', next: 'Siguiente', open: 'Abrir imagen' },
+        ? { close: 'Close', prev: 'Previous', next: 'Next', open: 'Open image', zoomIn: 'Zoom in', zoomOut: 'Zoom out' }
+        : { close: 'Cerrar', prev: 'Anterior', next: 'Siguiente', open: 'Abrir imagen', zoomIn: 'Acercar', zoomOut: 'Alejar' },
     [lang]
   );
 
@@ -80,6 +86,9 @@ export default function WorkGallery({ sections, emptyLabel, lang }: Props) {
       if (e.key === 'Escape') setModalIndex(null);
       if (e.key === 'ArrowRight') setModalIndex((i) => (i === null ? null : (i + 1) % flat.length));
       if (e.key === 'ArrowLeft') setModalIndex((i) => (i === null ? null : (i - 1 + flat.length) % flat.length));
+      if (e.key === '+' || e.key === '=') setZoom((z) => Math.min(4, +(z + 0.5).toFixed(2)));
+      if (e.key === '-' || e.key === '_') setZoom((z) => Math.max(1, +(z - 0.5).toFixed(2)));
+      if (e.key === '0') setZoom(1);
     };
     window.addEventListener('keydown', onKey);
     const prevOverflow = document.body.style.overflow;
@@ -91,6 +100,24 @@ export default function WorkGallery({ sections, emptyLabel, lang }: Props) {
       window.dispatchEvent(new Event('modal:close'));
     };
   }, [modalIndex, flat.length]);
+
+  // Cada imagen (y el cierre del modal) arranca sin zoom ni desplazamiento
+  useEffect(() => {
+    setZoom(1);
+    scaleMV.set(1);
+    xMV.set(0);
+    yMV.set(0);
+  }, [modalIndex, scaleMV, xMV, yMV]);
+
+  // Anima el zoom; al volver a 100% recentra la imagen
+  useEffect(() => {
+    const controls = [animate(scaleMV, zoom, { duration: 0.28, ease: EASE })];
+    if (zoom === 1) {
+      controls.push(animate(xMV, 0, { duration: 0.28, ease: EASE }));
+      controls.push(animate(yMV, 0, { duration: 0.28, ease: EASE }));
+    }
+    return () => controls.forEach((c) => c.stop());
+  }, [zoom, scaleMV, xMV, yMV]);
 
   const scrollToSection = useCallback((id: string) => {
     setActiveId(id);
@@ -199,9 +226,77 @@ export default function WorkGallery({ sections, emptyLabel, lang }: Props) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25 }}
-            className="fixed inset-0 z-50 grid place-items-center bg-ink/92 p-4 backdrop-blur-sm md:p-8"
+            className="fixed inset-0 z-50 grid place-items-center bg-ink/92 px-14 py-6 backdrop-blur-sm md:px-24 md:py-10"
             onClick={() => setModalIndex(null)}
           >
+            {/* Controles al borde del viewport, fuera de la imagen */}
+            <button
+              type="button"
+              onClick={() => setModalIndex(null)}
+              aria-label={t.close}
+              className="fixed right-3 top-3 z-10 grid size-10 place-items-center rounded-full bg-paper/10 text-paper transition-colors hover:bg-magenta-500 md:right-6 md:top-6"
+            >
+              ✕
+            </button>
+
+            {flat.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setModalIndex((modalIndex - 1 + flat.length) % flat.length);
+                  }}
+                  aria-label={t.prev}
+                  className="fixed left-2 top-1/2 z-10 grid size-11 -translate-y-1/2 place-items-center rounded-full bg-paper/10 text-lg text-paper transition-colors hover:bg-fire-500 md:left-6 md:size-12"
+                >
+                  ←
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setModalIndex((modalIndex + 1) % flat.length);
+                  }}
+                  aria-label={t.next}
+                  className="fixed right-2 top-1/2 z-10 grid size-11 -translate-y-1/2 place-items-center rounded-full bg-paper/10 text-lg text-paper transition-colors hover:bg-fire-500 md:right-6 md:size-12"
+                >
+                  →
+                </button>
+              </>
+            )}
+
+            {/* Zoom */}
+            <div className="fixed bottom-4 left-1/2 z-10 flex -translate-x-1/2 items-center gap-1 rounded-full bg-paper/10 p-1 backdrop-blur md:bottom-6">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setZoom((z) => Math.max(1, +(z - 0.5).toFixed(2)));
+                }}
+                aria-label={t.zoomOut}
+                disabled={zoom <= 1}
+                className="grid size-9 place-items-center rounded-full text-paper transition-colors hover:bg-fire-500 disabled:opacity-30"
+              >
+                −
+              </button>
+              <span className="min-w-12 text-center font-mono text-[11px] text-paper/70">
+                {Math.round(zoom * 100)}%
+              </span>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setZoom((z) => Math.min(4, +(z + 0.5).toFixed(2)));
+                }}
+                aria-label={t.zoomIn}
+                disabled={zoom >= 4}
+                className="grid size-9 place-items-center rounded-full text-paper transition-colors hover:bg-fire-500 disabled:opacity-30"
+              >
+                +
+              </button>
+            </div>
+
             <motion.figure
               initial={{ opacity: 0, scale: 0.94, y: 12 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -213,13 +308,25 @@ export default function WorkGallery({ sections, emptyLabel, lang }: Props) {
               <span className="mb-3 inline-block rounded-full bg-magenta-500 px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-paper">
                 {current.sectionLabel}
               </span>
-              <img
-                src={current.src}
-                srcSet={current.srcSet}
-                sizes="92vw"
-                alt={current.title}
-                className="max-h-[68vh] w-auto max-w-full rounded-xl object-contain"
-              />
+              <div
+                ref={zoomFrameRef}
+                className="flex max-h-[64vh] w-full items-center justify-center overflow-hidden rounded-xl"
+              >
+                <motion.img
+                  key={current.src}
+                  src={current.src}
+                  srcSet={current.srcSet}
+                  sizes="92vw"
+                  alt={current.title}
+                  drag={zoom > 1}
+                  dragConstraints={zoomFrameRef}
+                  dragElastic={0.05}
+                  dragMomentum={false}
+                  onClick={() => setZoom((z) => (z > 1 ? 1 : 2))}
+                  style={{ scale: scaleMV, x: xMV, y: yMV, touchAction: zoom > 1 ? 'none' : 'auto' }}
+                  className="hoverable max-h-[64vh] w-auto max-w-full rounded-xl object-contain"
+                />
+              </div>
               <figcaption className="mt-5 w-full max-w-2xl text-center">
                 <p className="font-display text-xl font-semibold text-paper md:text-2xl">{current.title}</p>
                 {current.caption && <p className="mt-2 text-sm leading-relaxed text-paper/70 md:text-base">{current.caption}</p>}
@@ -227,31 +334,6 @@ export default function WorkGallery({ sections, emptyLabel, lang }: Props) {
                   {modalIndex + 1} / {flat.length}
                 </p>
               </figcaption>
-
-              <button
-                type="button"
-                onClick={() => setModalIndex(null)}
-                aria-label={t.close}
-                className="absolute -top-2 right-0 grid size-10 place-items-center rounded-full bg-paper/10 text-paper transition-colors hover:bg-magenta-500 md:-right-2"
-              >
-                ✕
-              </button>
-              <button
-                type="button"
-                onClick={() => setModalIndex((modalIndex - 1 + flat.length) % flat.length)}
-                aria-label={t.prev}
-                className="absolute left-0 top-1/2 grid size-11 -translate-y-1/2 place-items-center rounded-full bg-paper/10 text-lg text-paper transition-colors hover:bg-fire-500 md:-left-2"
-              >
-                ←
-              </button>
-              <button
-                type="button"
-                onClick={() => setModalIndex((modalIndex + 1) % flat.length)}
-                aria-label={t.next}
-                className="absolute right-0 top-1/2 grid size-11 -translate-y-1/2 place-items-center rounded-full bg-paper/10 text-lg text-paper transition-colors hover:bg-fire-500 md:-right-2"
-              >
-                →
-              </button>
             </motion.figure>
           </motion.div>
         )}
