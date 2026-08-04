@@ -9,15 +9,15 @@ category: backgrounds
 year: 2024
 cover: ../../assets/portfolio/simplistic-volcano.png
 gallery:
+  - image: ../../assets/portfolio/6.png
+    caption: Paisajes en diferentes tiempos del día — Renderizado
+    caption_en: Background in diferent day times — Rendered
   - image: ../../assets/portfolio/simplistic-volcano.png
     caption: Volcán activo — estilo simple
     caption_en: Active volcano — simplistic style
   - image: ../../assets/portfolio/simplistic-forest.png
     caption: Bosque al atardecer — estilo simple
     caption_en: Forest at sunset — simplistic style
-  - image: ../../assets/portfolio/6.png
-    caption: Paisajes en diferentes tiempos del día — Renderizado
-    caption_en: Background in diferent day times — Rendered
 role: Background Artist
 client: Proyecto personal
 tools:
