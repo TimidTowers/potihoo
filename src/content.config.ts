@@ -16,6 +16,8 @@ const projects = defineCollection({
         .array(
           z.object({
             image: image(),
+            // Si hay video, la imagen se usa como póster y se reproduce el video.
+            video: z.string().optional(),
             caption: z.string().optional(),
             caption_en: z.string().optional(),
           })
@@ -50,6 +52,15 @@ const about = defineCollection({
       title: z.string(),
       org: z.string(),
       period: z.string(),
+    })).default([]),
+    courses: z.array(z.object({
+      title: z.string(),
+      org: z.string(),
+      period: z.string(),
+    })).default([]),
+    languages: z.array(z.object({
+      name: z.string(),
+      level: z.string(),
     })).default([]),
   }),
 });

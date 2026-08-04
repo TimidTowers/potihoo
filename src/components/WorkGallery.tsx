@@ -11,6 +11,8 @@ export interface GalleryItem {
   caption: string;
   /** Category label shown as a chip above the image in the lightbox. */
   sectionLabel: string;
+  /** When set, the item is a video; `src` acts as its poster. */
+  video?: string;
 }
 
 export interface GallerySection {
@@ -195,17 +197,37 @@ export default function WorkGallery({ sections, emptyLabel, lang }: Props) {
                     aria-label={`${t.open}: ${item.title}`}
                     aria-haspopup="dialog"
                   >
-                    <img
-                      src={item.src}
-                      srcSet={item.srcSet}
-                      sizes={item.sizes}
-                      width={item.width}
-                      height={item.height}
-                      alt={item.title}
-                      loading="lazy"
-                      decoding="async"
-                      className="block h-auto w-full"
-                    />
+                    {item.video ? (
+                      <span className="relative block">
+                        <video
+                          src={item.video}
+                          poster={item.src}
+                          width={item.width}
+                          height={item.height}
+                          muted
+                          loop
+                          playsInline
+                          preload="metadata"
+                          autoPlay
+                          className="block h-auto w-full"
+                        />
+                        <span className="pointer-events-none absolute bottom-3 left-3 rounded-full bg-ink/70 px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-paper backdrop-blur">
+                          ▶ video
+                        </span>
+                      </span>
+                    ) : (
+                      <img
+                        src={item.src}
+                        srcSet={item.srcSet}
+                        sizes={item.sizes}
+                        width={item.width}
+                        height={item.height}
+                        alt={item.title}
+                        loading="lazy"
+                        decoding="async"
+                        className="block h-auto w-full"
+                      />
+                    )}
                   </motion.button>
                 ))}
               </div>
@@ -265,8 +287,11 @@ export default function WorkGallery({ sections, emptyLabel, lang }: Props) {
               </>
             )}
 
-            {/* Zoom */}
-            <div className="fixed bottom-4 left-1/2 z-10 flex -translate-x-1/2 items-center gap-1 rounded-full bg-paper/10 p-1 backdrop-blur md:bottom-6">
+            {/* Zoom (solo para imágenes) */}
+            <div
+              className="fixed bottom-4 left-1/2 z-10 flex -translate-x-1/2 items-center gap-1 rounded-full bg-paper/10 p-1 backdrop-blur md:bottom-6"
+              hidden={!!current.video}
+            >
               <button
                 type="button"
                 onClick={(e) => {
@@ -311,20 +336,33 @@ export default function WorkGallery({ sections, emptyLabel, lang }: Props) {
                 ref={zoomFrameRef}
                 className="flex max-h-[64vh] w-full items-center justify-center overflow-hidden rounded-xl"
               >
-                <motion.img
-                  key={current.src}
-                  src={current.src}
-                  srcSet={current.srcSet}
-                  sizes="92vw"
-                  alt={current.title}
-                  drag={zoom > 1}
-                  dragConstraints={zoomFrameRef}
-                  dragElastic={0.05}
-                  dragMomentum={false}
-                  onClick={() => setZoom((z) => (z > 1 ? 1 : 2))}
-                  style={{ scale: scaleMV, x: xMV, y: yMV, touchAction: zoom > 1 ? 'none' : 'auto' }}
-                  className="hoverable max-h-[64vh] w-auto max-w-full rounded-xl object-contain"
-                />
+                {current.video ? (
+                  <video
+                    key={current.video}
+                    src={current.video}
+                    poster={current.src}
+                    controls
+                    autoPlay
+                    loop
+                    playsInline
+                    className="max-h-[64vh] w-auto max-w-full rounded-xl"
+                  />
+                ) : (
+                  <motion.img
+                    key={current.src}
+                    src={current.src}
+                    srcSet={current.srcSet}
+                    sizes="92vw"
+                    alt={current.title}
+                    drag={zoom > 1}
+                    dragConstraints={zoomFrameRef}
+                    dragElastic={0.05}
+                    dragMomentum={false}
+                    onClick={() => setZoom((z) => (z > 1 ? 1 : 2))}
+                    style={{ scale: scaleMV, x: xMV, y: yMV, touchAction: zoom > 1 ? 'none' : 'auto' }}
+                    className="hoverable max-h-[64vh] w-auto max-w-full rounded-xl object-contain"
+                  />
+                )}
               </div>
               <figcaption className="mt-5 w-full max-w-2xl text-center">
                 <p className="font-display text-xl font-semibold text-paper md:text-2xl">{current.title}</p>
