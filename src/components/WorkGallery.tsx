@@ -35,6 +35,11 @@ export default function WorkGallery({ sections, emptyLabel, lang }: Props) {
   const [zoom, setZoom] = useState(1);
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
   const zoomFrameRef = useRef<HTMLDivElement>(null);
+  const zoomImgRef = useRef<HTMLImageElement>(null);
+  const draggedRef = useRef(false);
+  // Límites de arrastre calculados a partir del zoom: sin esto la imagen
+  // solo podía quedarse centrada (su caja de layout no crece con el scale).
+  const [panBounds, setPanBounds] = useState({ left: 0, right: 0, top: 0, bottom: 0 });
   // Motion values compartidos entre el zoom programático y el arrastre (pan)
   const scaleMV = useMotionValue(1);
   const xMV = useMotionValue(0);
@@ -120,6 +125,24 @@ export default function WorkGallery({ sections, emptyLabel, lang }: Props) {
     }
     return () => controls.forEach((c) => c.stop());
   }, [zoom, scaleMV, xMV, yMV]);
+
+  // Cuánto se puede desplazar la imagen ampliada: la mitad del excedente
+  // que el zoom genera respecto a su tamaño en pantalla.
+  const recalcPanBounds = useCallback(() => {
+    const el = zoomImgRef.current;
+    if (!el) return;
+    const mx = Math.max(0, (el.offsetWidth * (zoom - 1)) / 2);
+    const my = Math.max(0, (el.offsetHeight * (zoom - 1)) / 2);
+    setPanBounds({ left: -mx, right: mx, top: -my, bottom: my });
+  }, [zoom]);
+
+  // Recalcula al cambiar el zoom o de imagen, y también si cambia el tamaño
+  // de la ventana (la imagen se reescala y los límites dejan de ser válidos).
+  useEffect(() => {
+    recalcPanBounds();
+    window.addEventListener('resize', recalcPanBounds);
+    return () => window.removeEventListener('resize', recalcPanBounds);
+  }, [recalcPanBounds, modalIndex]);
 
   const scrollToSection = useCallback((id: string) => {
     setActiveId(id);
@@ -350,16 +373,36 @@ export default function WorkGallery({ sections, emptyLabel, lang }: Props) {
                 ) : (
                   <motion.img
                     key={current.src}
+                    ref={zoomImgRef}
                     src={current.src}
                     srcSet={current.srcSet}
                     sizes="92vw"
                     alt={current.title}
                     drag={zoom > 1}
-                    dragConstraints={zoomFrameRef}
-                    dragElastic={0.05}
+                    dragConstraints={panBounds}
+                    dragElastic={0.12}
                     dragMomentum={false}
-                    onClick={() => setZoom((z) => (z > 1 ? 1 : 2))}
-                    style={{ scale: scaleMV, x: xMV, y: yMV, touchAction: zoom > 1 ? 'none' : 'auto' }}
+                    // La imagen puede terminar de cargar después del montaje:
+                    // sin esto los límites quedarían calculados sobre 0x0.
+                    onLoad={recalcPanBounds}
+                    onDragStart={() => {
+                      draggedRef.current = true;
+                    }}
+                    onClick={() => {
+                      // Tras arrastrar no queremos que el click reinicie el zoom
+                      if (draggedRef.current) {
+                        draggedRef.current = false;
+                        return;
+                      }
+                      setZoom((z) => (z > 1 ? 1 : 2));
+                    }}
+                    style={{
+                      scale: scaleMV,
+                      x: xMV,
+                      y: yMV,
+                      touchAction: zoom > 1 ? 'none' : 'auto',
+                      cursor: zoom > 1 ? 'grab' : 'zoom-in',
+                    }}
                     className="hoverable max-h-[64vh] w-auto max-w-full rounded-xl object-contain"
                   />
                 )}

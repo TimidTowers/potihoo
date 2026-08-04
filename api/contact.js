@@ -14,6 +14,60 @@ const FROM = process.env.CONTACT_FROM || 'potihoo <onboarding@resend.dev>';
 const esc = (s) =>
   String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
+// Los clientes de correo ignoran gran parte del CSS moderno: por eso el
+// maquetado va con tablas y todos los estilos en línea.
+function buildEmailHtml({ name, email, message }) {
+  const body = esc(message).replace(/\r?\n/g, '<br />');
+  return `<!doctype html>
+<html lang="es">
+<head><meta charset="utf-8" /><meta name="viewport" content="width=device-width,initial-scale=1" /><title>Nuevo mensaje</title></head>
+<body style="margin:0;padding:0;background:#f4f2ef;">
+  <!-- Resumen que muestran Gmail/Outlook junto al asunto -->
+  <div style="display:none;max-height:0;overflow:hidden;opacity:0;">${esc(name)} te escribió desde potihoo.vercel.app</div>
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f2ef;padding:28px 12px;">
+    <tr><td align="center">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.06);">
+
+        <tr><td style="background:#0a0a0a;padding:22px 28px;">
+          <span style="font:600 19px/1 Helvetica,Arial,sans-serif;color:#f5f1ea;letter-spacing:-.3px;">potihoo</span><span style="color:#e30052;font:600 19px/1 Helvetica,Arial,sans-serif;">.</span>
+          <div style="margin-top:6px;font:400 12px/1.4 Helvetica,Arial,sans-serif;color:rgba(245,241,234,.62);letter-spacing:.08em;text-transform:uppercase;">Nuevo mensaje del formulario</div>
+        </td></tr>
+
+        <tr><td style="padding:26px 28px 8px;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+            <tr>
+              <td style="font:600 11px/1.4 Helvetica,Arial,sans-serif;color:#8a8a92;letter-spacing:.1em;text-transform:uppercase;padding-bottom:4px;">De</td>
+            </tr>
+            <tr>
+              <td style="font:600 17px/1.4 Helvetica,Arial,sans-serif;color:#16161a;padding-bottom:2px;">${esc(name)}</td>
+            </tr>
+            <tr>
+              <td style="padding-bottom:20px;"><a href="mailto:${esc(email)}" style="font:400 14px/1.4 Helvetica,Arial,sans-serif;color:#e30052;text-decoration:none;">${esc(email)}</a></td>
+            </tr>
+          </table>
+        </td></tr>
+
+        <tr><td style="padding:0 28px;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#faf8f6;border-left:3px solid #e30052;border-radius:8px;">
+            <tr><td style="padding:18px 20px;font:400 15px/1.7 Helvetica,Arial,sans-serif;color:#2a2a30;">${body}</td></tr>
+          </table>
+        </td></tr>
+
+        <tr><td style="padding:24px 28px 28px;">
+          <a href="mailto:${esc(email)}" style="display:inline-block;background:#e30052;color:#ffffff;font:600 14px/1 Helvetica,Arial,sans-serif;text-decoration:none;padding:13px 24px;border-radius:999px;">Responder a ${esc(name)}</a>
+        </td></tr>
+
+        <tr><td style="border-top:1px solid #eceae6;padding:16px 28px;font:400 12px/1.6 Helvetica,Arial,sans-serif;color:#9a9aa2;">
+          Enviado desde el formulario de <a href="https://potihoo.vercel.app/contact" style="color:#9a9aa2;">potihoo.vercel.app</a>. Si respondes a este correo le llega directamente a ${esc(name)}.
+        </td></tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.statusCode = 405;
@@ -68,15 +122,9 @@ export default async function handler(req, res) {
         from: FROM,
         to: [TO],
         reply_to: email,
-        subject: `potihoo · mensaje de ${name}`,
-        html: `
-          <div style="font-family:system-ui,sans-serif;line-height:1.6">
-            <h2 style="margin:0 0 12px">Nuevo mensaje desde potihoo.vercel.app</h2>
-            <p><strong>Nombre:</strong> ${esc(name)}</p>
-            <p><strong>Email:</strong> <a href="mailto:${esc(email)}">${esc(email)}</a></p>
-            <p><strong>Mensaje:</strong></p>
-            <p style="white-space:pre-wrap;border-left:3px solid #e30052;padding-left:12px">${esc(message)}</p>
-          </div>`,
+        subject: `Nuevo mensaje de ${name} · potihoo`,
+        text: `Nuevo mensaje desde potihoo.vercel.app\n\nNombre: ${name}\nEmail: ${email}\n\n${message}\n\n— Responde a este correo para contestarle directamente.`,
+        html: buildEmailHtml({ name, email, message }),
       }),
     });
 
