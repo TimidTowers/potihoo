@@ -4,5 +4,11 @@
   "outputDirectory": "dist",
   "framework": "astro",
   "cleanUrls": true,
-  "trailingSlash": false
+  "trailingSlash": false,
+  "redirects": [
+    { "source": "/", "destination": "/personajes", "permanent": false },
+    { "source": "/en", "destination": "/en/characters", "permanent": false },
+    { "source": "/work", "destination": "/personajes", "permanent": false },
+    { "source": "/en/work", "destination": "/en/characters", "permanent": false }
+  ]
 }

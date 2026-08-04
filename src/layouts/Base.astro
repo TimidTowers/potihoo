@@ -1,6 +1,7 @@
 ---
 import '@/styles/global.css';
 import Nav from '@/components/Nav.astro';
+import Banner from '@/components/Banner.astro';
 import Footer from '@/components/Footer.astro';
 import Cursor from '@/components/Cursor.astro';
 import { getLangFromUrl, useTranslations, type Lang } from '@/i18n/utils';
@@ -60,6 +61,8 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     </a>
 
     <Nav />
+
+    <Banner />
 
     <main id="main" class="relative">
       <slot />

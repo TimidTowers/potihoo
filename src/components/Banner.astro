@@ -1,0 +1,31 @@
+---
+// Banner carrusel global: toma TODAS las imágenes de src/assets/banner/
+// (ordenadas por nombre de archivo) y las muestra arriba de cada página.
+// Para cambiar el banner: agregar/quitar archivos en esa carpeta.
+import { getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import BannerCarousel from '@/components/BannerCarousel.tsx';
+import { getLangFromUrl, type Lang } from '@/i18n/utils';
+
+const lang: Lang = getLangFromUrl(Astro.url);
+
+const modules = import.meta.glob<{ default: ImageMetadata }>(
+  '/src/assets/banner/*.{png,jpg,jpeg,webp,avif}',
+  { eager: true }
+);
+
+const metas = Object.entries(modules)
+  .sort(([a], [b]) => a.localeCompare(b))
+  .map(([, m]) => m.default);
+
+const slides = await Promise.all(
+  metas.map(async (img) => {
+    const opt = await getImage({ src: img, widths: [768, 1280, 1920], format: 'webp', quality: 85 });
+    return { src: opt.src, srcSet: opt.srcSet.attribute, width: img.width, height: img.height };
+  })
+);
+---
+
+{slides.length > 0 && (
+  <BannerCarousel client:visible slides={slides} alt="potihoo — Ana Paula" lang={lang} />
+)}

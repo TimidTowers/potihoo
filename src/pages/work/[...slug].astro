@@ -2,7 +2,7 @@
 import Base from '@/layouts/Base.astro';
 import { Image } from 'astro:assets';
 import { getLangFromUrl, useTranslations, localizedPath, type Lang } from '@/i18n/utils';
-import { getPublishedProjects, localizedTitle, localizedDescription, localizedCaption } from '@/lib/projects';
+import { getPublishedProjects, localizedTitle, localizedDescription, localizedCaption, categoryPath } from '@/lib/projects';
 import { render } from 'astro:content';
 
 export async function getStaticPaths() {
@@ -32,7 +32,7 @@ const next = all[(idx + 1) % all.length];
     <!-- Hero -->
     <section class="mx-auto max-w-7xl px-5 lg:px-10 pt-12">
       <a
-        href={localizedPath('/work', lang)}
+        href={categoryPath(project.data.category, lang)}
         class="inline-flex items-center gap-2 text-sm text-paper/60 hover:text-magenta-500 transition-colors mb-12"
       >
         <span>←</span> {t('work.back')}
@@ -65,7 +65,7 @@ const next = all[(idx + 1) % all.length];
             widths={[640, 960, 1280, 1920]}
             sizes="(max-width: 768px) calc(100vw - 2.5rem), 72rem"
             format="webp"
-            quality={82}
+            quality={90}
             class="block w-full h-auto"
           />
         )}
@@ -116,7 +116,7 @@ const next = all[(idx + 1) % all.length];
                 widths={[640, 960, 1280, 1920]}
                 sizes="(max-width: 768px) calc(100vw - 2.5rem), 48rem"
                 format="webp"
-                quality={82}
+                quality={90}
                 loading="lazy"
                 class="block w-full h-auto"
               />

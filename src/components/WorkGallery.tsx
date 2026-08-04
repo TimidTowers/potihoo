@@ -31,6 +31,8 @@ export default function WorkGallery({ sections, emptyLabel, lang }: Props) {
   const [activeId, setActiveId] = useState(sections[0]?.id ?? '');
   const [modalIndex, setModalIndex] = useState<number | null>(null);
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
+  // Single-category mode: the page supplies its own header, so no tabs/h2 here.
+  const single = sections.length === 1;
 
   const t = useMemo(
     () =>
@@ -98,7 +100,8 @@ export default function WorkGallery({ sections, emptyLabel, lang }: Props) {
 
   return (
     <MotionConfig reducedMotion="user">
-      {/* Category tabs — anchors, not filters */}
+      {/* Category tabs — anchors, not filters (hidden in single-category mode) */}
+      {!single && (
       <nav
         aria-label="Categorías"
         className="sticky top-[68px] z-30 border-b border-paper/10 bg-ink/75 backdrop-blur-md"
@@ -120,6 +123,7 @@ export default function WorkGallery({ sections, emptyLabel, lang }: Props) {
           ))}
         </div>
       </nav>
+      )}
 
       {/* One section per category: big header + continuous vertical strip */}
       <div className="mx-auto w-full max-w-3xl px-5 md:max-w-4xl lg:max-w-[60rem] lg:px-8">
@@ -130,8 +134,9 @@ export default function WorkGallery({ sections, emptyLabel, lang }: Props) {
             ref={(el) => {
               sectionRefs.current[section.id] = el;
             }}
-            className="scroll-mt-36 py-14 md:py-20"
+            className={single ? 'scroll-mt-36 pb-14 pt-2 md:pb-20 md:pt-4' : 'scroll-mt-36 py-14 md:py-20'}
           >
+            {!single && (
             <motion.h2
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -142,6 +147,7 @@ export default function WorkGallery({ sections, emptyLabel, lang }: Props) {
               {section.label}
               <span className="text-magenta-500">.</span>
             </motion.h2>
+            )}
 
             {section.items.length === 0 ? (
               <p className="italic text-paper/50">{emptyLabel}</p>
