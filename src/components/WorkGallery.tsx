@@ -84,9 +84,11 @@ export default function WorkGallery({ sections, emptyLabel, lang }: Props) {
     window.addEventListener('keydown', onKey);
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
+    window.dispatchEvent(new Event('modal:open')); // pausa Lenis (Base layout)
     return () => {
       window.removeEventListener('keydown', onKey);
       document.body.style.overflow = prevOverflow;
+      window.dispatchEvent(new Event('modal:close'));
     };
   }, [modalIndex, flat.length]);
 

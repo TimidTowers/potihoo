@@ -74,6 +74,30 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 
     <Footer />
 
+    <!-- Smooth scrolling (Lenis) — inertia feel; respects reduced motion -->
+    <script>
+      import Lenis from 'lenis';
+
+      let lenis;
+      const start = () => {
+        if (lenis || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        lenis = new Lenis({ lerp: 0.12, smoothWheel: true });
+        const raf = (t) => {
+          lenis.raf(t);
+          requestAnimationFrame(raf);
+        };
+        requestAnimationFrame(raf);
+        // El modal de la galería congela el scroll mientras está abierto
+        window.addEventListener('modal:open', () => lenis?.stop());
+        window.addEventListener('modal:close', () => lenis?.start());
+      };
+      document.addEventListener('astro:page-load', start);
+      // Tras cada navegación SPA, sincroniza Lenis con la posición real
+      document.addEventListener('astro:after-swap', () => {
+        requestAnimationFrame(() => lenis?.scrollTo(window.scrollY, { immediate: true, force: true }));
+      });
+    </script>
+
     <!-- Scroll reveal — re-runs on every client-side navigation -->
     <script>
       const reveal = () => {
