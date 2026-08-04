@@ -32,6 +32,6 @@ pnpm-debug.log*
 
 .vercel
 
-# Carpetas fuente de Ana (los assets ya copiados viven en src/assets)
-Banner/
-Dibujos/
+# Carpetas fuente de Ana en la raíz (los assets ya copiados viven en src/assets)
+/Banner/
+/Dibujos/
