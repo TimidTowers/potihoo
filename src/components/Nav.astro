@@ -1,27 +1,32 @@
 ---
 import { getLangFromUrl, useTranslations, localizedPath, stripLocaleFromPath, languages, type Lang } from '@/i18n/utils';
-import { CATEGORY_ORDER } from '@/lib/projects';
+import { CATEGORY_ORDER, CATEGORY_SLUGS, categoryPath } from '@/lib/projects';
 
 const lang: Lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 const currentBase = stripLocaleFromPath(Astro.url.pathname);
 
+// Nav = 4 categorías + Sobre mí + Contacto (sin Inicio ni Trabajo)
 const links = [
-  { href: localizedPath('/', lang),        label: t('nav.home'),    base: '/' },
-  { href: localizedPath('/work', lang),    label: t('nav.work'),    base: '/work' },
-  { href: localizedPath('/about', lang),   label: t('nav.about'),   base: '/about' },
+  ...CATEGORY_ORDER.map((c) => ({
+    href: categoryPath(c, lang),
+    label: t(`work.categories.${c}`),
+    base: `/${CATEGORY_SLUGS[lang][c]}`,
+  })),
+  { href: localizedPath('/about', lang), label: t('nav.about'), base: '/about' },
   { href: localizedPath('/contact', lang), label: t('nav.contact'), base: '/contact' },
 ];
 
-// Category shortcuts jump straight to each section of /work
-const workBase = localizedPath('/work', lang);
-const catLinks = CATEGORY_ORDER.map((c) => ({
-  href: `${workBase}#${c}`,
-  label: t(`work.categories.${c}`),
-}));
+const isActive = (base: string) => currentBase.startsWith(base);
 
-const isActive = (base: string) =>
-  base === '/' ? currentBase === '/' : currentBase.startsWith(base);
+// El switcher de idioma traduce también los slugs de categoría
+// (/personajes ↔ /en/characters), no solo el prefijo /en.
+const seg = currentBase.split('/').filter(Boolean)[0] ?? '';
+const catFromSlug = CATEGORY_ORDER.find(
+  (c) => CATEGORY_SLUGS.es[c] === seg || CATEGORY_SLUGS.en[c] === seg
+);
+const langSwitchPath = (code: Lang) =>
+  catFromSlug ? categoryPath(catFromSlug, code) : localizedPath(currentBase, code);
 ---
 
 <header class="fixed top-0 left-0 right-0 z-40 backdrop-blur-md bg-ink/60 border-b border-paper/5">
@@ -32,31 +37,8 @@ const isActive = (base: string) =>
       <span class="text-magenta-500 group-hover:text-fire-500 transition-colors">.</span>
     </a>
 
-    <ul class="hidden md:flex items-center gap-4 lg:gap-5 text-sm font-medium">
-      {links.slice(0, 2).map((l) => (
-        <li>
-          <a
-            href={l.href}
-            class:list={[
-              'relative py-2 transition-colors',
-              isActive(l.base) ? 'text-sun-500' : 'text-paper/80 hover:text-paper',
-            ]}
-          >
-            {l.label}
-            {isActive(l.base) && (
-              <span class="absolute -bottom-px left-0 right-0 h-px bg-gradient-to-r from-magenta-500 via-fire-500 to-sun-500"></span>
-            )}
-          </a>
-        </li>
-      ))}
-      {catLinks.map((c) => (
-        <li class="hidden lg:block">
-          <a href={c.href} class="py-2 text-paper/60 hover:text-magenta-500 transition-colors">
-            {c.label}
-          </a>
-        </li>
-      ))}
-      {links.slice(2).map((l) => (
+    <ul class="hidden lg:flex items-center gap-5 xl:gap-7 text-sm font-medium">
+      {links.map((l) => (
         <li>
           <a
             href={l.href}
@@ -77,7 +59,7 @@ const isActive = (base: string) =>
     <div class="flex items-center gap-2 text-xs font-mono">
       {(Object.keys(languages) as Lang[]).map((code) => (
         <a
-          href={localizedPath(currentBase, code)}
+          href={langSwitchPath(code)}
           class:list={[
             'uppercase px-2 py-1 rounded transition-colors',
             lang === code ? 'bg-magenta-500 text-paper' : 'text-paper/60 hover:text-paper',
@@ -91,7 +73,7 @@ const isActive = (base: string) =>
 
     <button
       id="nav-toggle"
-      class="md:hidden flex flex-col gap-1.5 p-2"
+      class="lg:hidden flex flex-col gap-1.5 p-2"
       aria-label="Toggle menu"
       aria-expanded="false"
     >
@@ -102,29 +84,9 @@ const isActive = (base: string) =>
   </nav>
 
   <!-- Mobile menu -->
-  <div id="nav-menu" class="md:hidden hidden border-t border-paper/5 bg-ink">
+  <div id="nav-menu" class="lg:hidden hidden border-t border-paper/5 bg-ink">
     <ul class="px-5 py-6 flex flex-col gap-4 text-lg font-display">
-      {links.slice(0, 2).map((l) => (
-        <li>
-          <a
-            href={l.href}
-            class:list={[
-              'block py-2',
-              isActive(l.base) ? 'text-sun-500' : 'text-paper',
-            ]}
-          >
-            {l.label}
-          </a>
-        </li>
-      ))}
-      {catLinks.map((c) => (
-        <li>
-          <a href={c.href} class="block py-1 pl-4 text-base text-paper/70 hover:text-magenta-500 transition-colors">
-            {c.label}
-          </a>
-        </li>
-      ))}
-      {links.slice(2).map((l) => (
+      {links.map((l) => (
         <li>
           <a
             href={l.href}

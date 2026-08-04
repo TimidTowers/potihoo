@@ -31,3 +31,7 @@ pnpm-debug.log*
 .claude/
 
 .vercel
+
+# Carpetas fuente de Ana (los assets ya copiados viven en src/assets)
+Banner/
+Dibujos/

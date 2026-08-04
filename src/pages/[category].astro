@@ -1,0 +1,30 @@
+---
+import Base from '@/layouts/Base.astro';
+import WorkGallery from '@/components/WorkGallery.tsx';
+import { useTranslations } from '@/i18n/utils';
+import { CATEGORY_SLUGS, type Category } from '@/lib/projects';
+import { buildGallerySection } from '@/lib/gallery';
+
+export async function getStaticPaths() {
+  return (Object.entries(CATEGORY_SLUGS.es) as [Category, string][]).map(([cat, slug]) => ({
+    params: { category: slug },
+    props: { cat },
+  }));
+}
+
+const { cat } = Astro.props;
+const lang = 'es' as const;
+const t = useTranslations(lang);
+const section = await buildGallerySection(cat, lang);
+---
+
+<Base title={section.label}>
+  <section class="mx-auto max-w-5xl px-5 lg:px-10 pt-12 pb-4 md:pt-16 md:pb-6">
+    <p class="font-mono text-xs uppercase tracking-[0.3em] text-fire-500 mb-4">◆ potihoo</p>
+    <h1 class="font-display text-5xl md:text-7xl font-semibold tracking-tighter leading-[0.9]">
+      <span class="text-paper">{section.label}</span><span class="text-gradient italic">.</span>
+    </h1>
+  </section>
+
+  <WorkGallery client:visible sections={[section]} emptyLabel={t('work.no_projects')} lang={lang} />
+</Base>

@@ -8,6 +8,17 @@ export type GalleryEntry = ProjectEntry['data']['gallery'][number];
 export const CATEGORY_ORDER = ['animation', 'characters', 'illustration', 'backgrounds'] as const;
 export type Category = (typeof CATEGORY_ORDER)[number];
 
+/** URL slug of each category page, per language (es sin prefijo, en bajo /en/). */
+export const CATEGORY_SLUGS: Record<Lang, Record<Category, string>> = {
+  es: { animation: 'animacion', characters: 'personajes', illustration: 'ilustracion', backgrounds: 'fondos' },
+  en: { animation: 'animation', characters: 'characters', illustration: 'illustration', backgrounds: 'backgrounds' },
+};
+
+export function categoryPath(cat: Category, lang: Lang): string {
+  const slug = CATEGORY_SLUGS[lang][cat];
+  return lang === 'es' ? `/${slug}` : `/${lang}/${slug}`;
+}
+
 export async function getPublishedProjects(): Promise<ProjectEntry[]> {
   const all = await getCollection('projects', ({ data }) => !data.draft);
   return all.sort((a, b) => a.data.order - b.data.order);
