@@ -58,11 +58,11 @@
   "contact": {
     "title": "Hablemos",
     "subtitle": "Para colaboraciones, encargos o solo decir hola.",
-    "email_label": "anapaulatvi@gmail.com",
+    "email_label": "Email",
     "social_label": "En redes",
     "form": {
       "name": "Tu nombre",
-      "email": "anapaulatvi@gmail.com",
+      "email": "Tu email",
       "message": "Cuéntame qué tienes en mente",
       "submit": "Enviar mensaje",
       "success": "¡Mensaje recibido! Te respondo pronto.",

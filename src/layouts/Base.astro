@@ -3,6 +3,7 @@ import '@/styles/global.css';
 import { ClientRouter, fade } from 'astro:transitions';
 import Nav from '@/components/Nav.astro';
 import Banner from '@/components/Banner.astro';
+import CategoryNav from '@/components/CategoryNav.astro';
 import Footer from '@/components/Footer.astro';
 import Cursor from '@/components/Cursor.astro';
 import { getLangFromUrl, useTranslations, type Lang } from '@/i18n/utils';
@@ -68,11 +69,37 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 
     <Banner />
 
+    <CategoryNav />
+
     <main id="main" class="relative" transition:animate={fade({ duration: '0.32s' })}>
       <slot />
     </main>
 
     <Footer />
+
+    <!-- Smooth scrolling (Lenis) — inertia feel; respects reduced motion -->
+    <script>
+      import Lenis from 'lenis';
+
+      let lenis: Lenis | undefined;
+      const start = () => {
+        if (lenis || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        lenis = new Lenis({ lerp: 0.07, smoothWheel: true });
+        const raf = (t: number) => {
+          lenis?.raf(t);
+          requestAnimationFrame(raf);
+        };
+        requestAnimationFrame(raf);
+        // El modal de la galería congela el scroll mientras está abierto
+        window.addEventListener('modal:open', () => lenis?.stop());
+        window.addEventListener('modal:close', () => lenis?.start());
+      };
+      document.addEventListener('astro:page-load', start);
+      // Tras cada navegación SPA, sincroniza Lenis con la posición real
+      document.addEventListener('astro:after-swap', () => {
+        requestAnimationFrame(() => lenis?.scrollTo(window.scrollY, { immediate: true, force: true }));
+      });
+    </script>
 
     <!-- Scroll reveal — re-runs on every client-side navigation -->
     <script>

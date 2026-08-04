@@ -1,0 +1,46 @@
+---
+// Menú de secciones — va debajo del banner en todas las páginas.
+// Sticky: al scrollear queda pegado bajo la barra del logo.
+import { getLangFromUrl, useTranslations, localizedPath, stripLocaleFromPath, type Lang } from '@/i18n/utils';
+import { CATEGORY_ORDER, CATEGORY_SLUGS, categoryPath } from '@/lib/projects';
+
+const lang: Lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const currentBase = stripLocaleFromPath(Astro.url.pathname);
+
+const links = [
+  ...CATEGORY_ORDER.map((c) => ({
+    href: categoryPath(c, lang),
+    label: t(`work.categories.${c}`),
+    base: `/${CATEGORY_SLUGS[lang][c]}`,
+  })),
+  { href: localizedPath('/about', lang), label: t('nav.about'), base: '/about' },
+  { href: localizedPath('/contact', lang), label: t('nav.contact'), base: '/contact' },
+];
+
+const isActive = (base: string) => currentBase.startsWith(base);
+---
+
+<nav
+  aria-label="Secciones"
+  class="sticky top-[60px] z-30 border-b border-paper/5 bg-ink/85 backdrop-blur-md"
+>
+  <ul class="mx-auto max-w-7xl px-5 lg:px-10 flex items-center justify-start md:justify-center gap-6 lg:gap-8 overflow-x-auto whitespace-nowrap py-3.5 text-sm font-medium">
+    {links.map((l) => (
+      <li class="shrink-0">
+        <a
+          href={l.href}
+          class:list={[
+            'relative py-2 transition-colors',
+            isActive(l.base) ? 'text-sun-500' : 'text-paper/80 hover:text-paper',
+          ]}
+        >
+          {l.label}
+          {isActive(l.base) && (
+            <span class="absolute -bottom-1 left-0 right-0 h-px bg-gradient-to-r from-magenta-500 via-fire-500 to-sun-500"></span>
+          )}
+        </a>
+      </li>
+    ))}
+  </ul>
+</nav>
