@@ -1,23 +1,12 @@
 ---
-import { getLangFromUrl, useTranslations, localizedPath, stripLocaleFromPath, languages, type Lang } from '@/i18n/utils';
+// Barra superior mínima: solo logo + selector de idioma.
+// Las secciones (categorías, Sobre mí, Contacto) viven en CategoryNav,
+// que se muestra debajo del banner.
+import { getLangFromUrl, localizedPath, stripLocaleFromPath, languages, type Lang } from '@/i18n/utils';
 import { CATEGORY_ORDER, CATEGORY_SLUGS, categoryPath } from '@/lib/projects';
 
 const lang: Lang = getLangFromUrl(Astro.url);
-const t = useTranslations(lang);
 const currentBase = stripLocaleFromPath(Astro.url.pathname);
-
-// Nav = 4 categorías + Sobre mí + Contacto (sin Inicio ni Trabajo)
-const links = [
-  ...CATEGORY_ORDER.map((c) => ({
-    href: categoryPath(c, lang),
-    label: t(`work.categories.${c}`),
-    base: `/${CATEGORY_SLUGS[lang][c]}`,
-  })),
-  { href: localizedPath('/about', lang), label: t('nav.about'), base: '/about' },
-  { href: localizedPath('/contact', lang), label: t('nav.contact'), base: '/contact' },
-];
-
-const isActive = (base: string) => currentBase.startsWith(base);
 
 // El switcher de idioma traduce también los slugs de categoría
 // (/personajes ↔ /en/characters), no solo el prefijo /en.
@@ -37,25 +26,6 @@ const langSwitchPath = (code: Lang) =>
       <span class="text-magenta-500 group-hover:text-fire-500 transition-colors">.</span>
     </a>
 
-    <ul class="hidden lg:flex items-center gap-5 xl:gap-7 text-sm font-medium">
-      {links.map((l) => (
-        <li>
-          <a
-            href={l.href}
-            class:list={[
-              'relative py-2 transition-colors',
-              isActive(l.base) ? 'text-sun-500' : 'text-paper/80 hover:text-paper',
-            ]}
-          >
-            {l.label}
-            {isActive(l.base) && (
-              <span class="absolute -bottom-px left-0 right-0 h-px bg-gradient-to-r from-magenta-500 via-fire-500 to-sun-500"></span>
-            )}
-          </a>
-        </li>
-      ))}
-    </ul>
-
     <div class="flex items-center gap-2 text-xs font-mono">
       {(Object.keys(languages) as Lang[]).map((code) => (
         <a
@@ -70,49 +40,7 @@ const langSwitchPath = (code: Lang) =>
         </a>
       ))}
     </div>
-
-    <button
-      id="nav-toggle"
-      class="lg:hidden flex flex-col gap-1.5 p-2"
-      aria-label="Toggle menu"
-      aria-expanded="false"
-    >
-      <span class="block h-px w-6 bg-paper transition-transform"></span>
-      <span class="block h-px w-6 bg-paper transition-opacity"></span>
-      <span class="block h-px w-6 bg-paper transition-transform"></span>
-    </button>
   </nav>
-
-  <!-- Mobile menu -->
-  <div id="nav-menu" class="lg:hidden hidden border-t border-paper/5 bg-ink">
-    <ul class="px-5 py-6 flex flex-col gap-4 text-lg font-display">
-      {links.map((l) => (
-        <li>
-          <a
-            href={l.href}
-            class:list={[
-              'block py-2',
-              isActive(l.base) ? 'text-sun-500' : 'text-paper',
-            ]}
-          >
-            {l.label}
-          </a>
-        </li>
-      ))}
-    </ul>
-  </div>
 </header>
 
-<div class="h-[68px]"></div>
-
-<script>
-  // Re-bind after each client-side navigation (the header DOM is replaced)
-  document.addEventListener('astro:page-load', () => {
-    const toggle = document.getElementById('nav-toggle');
-    const menu = document.getElementById('nav-menu');
-    toggle?.addEventListener('click', () => {
-      const open = menu?.classList.toggle('hidden') === false;
-      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-    });
-  });
-</script>
+<div class="h-[60px]"></div>
