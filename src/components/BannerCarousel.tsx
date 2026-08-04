@@ -47,7 +47,9 @@ export default function BannerCarousel({ slides, alt, lang }: Props) {
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
       >
-        <div className="relative h-[clamp(170px,34vw,400px)] w-full">
+        {/* aspect-video mantiene la proporción real del arte; el max-h solo
+            recorta levemente en pantallas muy anchas para no comerse la página */}
+        <div className="relative aspect-video max-h-[640px] w-full">
           {slides.map((s, i) => (
             <motion.img
               key={s.src}
