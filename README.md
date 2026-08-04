@@ -74,6 +74,13 @@ Decap necesita autenticarse contra GitHub para guardar cambios. Pasos:
 - `src/i18n/{es,en}.json` → todos los textos de UI.
 - `src/styles/global.css` → paleta, tipografía, animaciones.
 
+### Traducción automática ES → EN
+Los campos en inglés de los proyectos (`title_en`, `description_en`, `caption_en`)
+son **opcionales**: si quedan vacíos, el build los traduce solo con DeepL
+(`src/lib/translate.ts`, env var `DEEPL_API_KEY` en Vercel). Lo escrito a mano
+siempre tiene prioridad, y si la API falla el sitio muestra el texto en español
+(el build nunca se rompe por esto).
+
 ## 5. Estructura
 
 ```

@@ -2,7 +2,7 @@
 import Base from '@/layouts/Base.astro';
 import { Image } from 'astro:assets';
 import { useTranslations, localizedPath } from '@/i18n/utils';
-import { getPublishedProjects, localizedTitle, localizedDescription, localizedCaption } from '@/lib/projects';
+import { getPublishedProjects, localizedTitleAuto, localizedDescriptionAuto, localizedCaptionAuto } from '@/lib/projects';
 import { render } from 'astro:content';
 
 export async function getStaticPaths() {
@@ -18,13 +18,18 @@ const lang = 'en' as const;
 const t = useTranslations(lang);
 const { Content } = await render(project);
 
-const title = localizedTitle(project, lang);
-const description = localizedDescription(project, lang);
+const title = await localizedTitleAuto(project, lang);
+const description = await localizedDescriptionAuto(project, lang);
 const cat = t(`work.categories.${project.data.category}`);
+
+const galleryItems = await Promise.all(
+  project.data.gallery.map(async (g) => ({ image: g.image, caption: await localizedCaptionAuto(g, lang) }))
+);
 
 const all = await getPublishedProjects();
 const idx = all.findIndex((p) => p.id === project.id);
 const next = all[(idx + 1) % all.length];
+const nextTitle = next ? await localizedTitleAuto(next, lang) : '';
 ---
 
 <Base title={title} description={description}>
@@ -95,14 +100,14 @@ const next = all[(idx + 1) % all.length];
       </div>
     </section>
 
-    {project.data.gallery.length > 0 && (
+    {galleryItems.length > 0 && (
       <section class="mx-auto max-w-3xl px-5 lg:px-10 pb-24 flex flex-col gap-6 md:gap-8">
-        {project.data.gallery.map((g) => (
+        {galleryItems.map((g) => (
           <figure class="reveal">
             <div class="rounded-2xl overflow-hidden bg-paper/5">
               <Image
                 src={g.image}
-                alt={localizedCaption(g, lang) ?? title}
+                alt={g.caption ?? title}
                 widths={[640, 960, 1280, 1920]}
                 sizes="(max-width: 768px) calc(100vw - 2.5rem), 48rem"
                 format="webp"
@@ -111,8 +116,8 @@ const next = all[(idx + 1) % all.length];
                 class="block w-full h-auto"
               />
             </div>
-            {localizedCaption(g, lang) && (
-              <figcaption class="mt-2 text-sm text-paper/60">{localizedCaption(g, lang)}</figcaption>
+            {g.caption && (
+              <figcaption class="mt-2 text-sm text-paper/60">{g.caption}</figcaption>
             )}
           </figure>
         ))}
@@ -125,7 +130,7 @@ const next = all[(idx + 1) % all.length];
           <div>
             <p class="font-mono text-xs uppercase tracking-widest text-paper/50 mb-2">Next →</p>
             <h3 class="font-display text-3xl md:text-5xl font-semibold tracking-tight group-hover:text-gradient transition">
-              {localizedTitle(next, lang)}
+              {nextTitle}
             </h3>
           </div>
           <span class="size-14 rounded-full bg-sun-500 text-ink grid place-items-center text-xl group-hover:bg-fire-500 group-hover:text-paper group-hover:rotate-45 transition">→</span>

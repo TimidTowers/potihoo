@@ -4,11 +4,14 @@ import Hero from '@/components/Hero.astro';
 import Marquee from '@/components/Marquee.astro';
 import { Image } from 'astro:assets';
 import { getLangFromUrl, useTranslations, localizedPath } from '@/i18n/utils';
-import { getFeaturedProjects, localizedTitle } from '@/lib/projects';
+import { getFeaturedProjects, localizedTitleAuto } from '@/lib/projects';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 const featured = await getFeaturedProjects();
+const featuredItems = await Promise.all(
+  featured.map(async (p) => ({ p, title: await localizedTitleAuto(p, lang) }))
+);
 ---
 
 <Base>
@@ -21,15 +24,15 @@ const featured = await getFeaturedProjects();
       <p class="text-paper/50 italic text-center">{t('work.no_projects')}</p>
     ) : (
       <div class="flex flex-col gap-6 md:gap-10">
-        {featured.map((p) => (
+        {featuredItems.map(({ p, title }) => (
           <a
             href={localizedPath(`/work/${p.id}`, lang)}
             class="group block reveal overflow-hidden rounded-2xl bg-paper/5"
-            aria-label={localizedTitle(p, lang)}
+            aria-label={title}
           >
             <Image
               src={p.data.cover}
-              alt={localizedTitle(p, lang)}
+              alt={title}
               widths={[640, 960, 1280, 1600]}
               sizes="(max-width: 768px) calc(100vw - 2.5rem), 48rem"
               format="webp"
