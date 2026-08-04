@@ -106,10 +106,13 @@ const langSwitchPath = (code: Lang) =>
 <div class="h-[68px]"></div>
 
 <script>
-  const toggle = document.getElementById('nav-toggle');
-  const menu = document.getElementById('nav-menu');
-  toggle?.addEventListener('click', () => {
-    const open = menu?.classList.toggle('hidden') === false;
-    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  // Re-bind after each client-side navigation (the header DOM is replaced)
+  document.addEventListener('astro:page-load', () => {
+    const toggle = document.getElementById('nav-toggle');
+    const menu = document.getElementById('nav-menu');
+    toggle?.addEventListener('click', () => {
+      const open = menu?.classList.toggle('hidden') === false;
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
   });
 </script>

@@ -27,5 +27,11 @@ const slides = await Promise.all(
 ---
 
 {slides.length > 0 && (
-  <BannerCarousel client:visible slides={slides} alt="potihoo — Ana Paula" lang={lang} />
+  <BannerCarousel
+    client:visible
+    transition:persist="site-banner"
+    slides={slides}
+    alt="potihoo — Ana Paula"
+    lang={lang}
+  />
 )}
