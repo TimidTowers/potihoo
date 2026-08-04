@@ -35,3 +35,6 @@ pnpm-debug.log*
 # Carpetas fuente de Ana en la raíz (los assets ya copiados viven en src/assets)
 /Banner/
 /Dibujos/
+
+# CV fuente de Ana (los datos ya estan en src/content/about)
+/Curriculum*.pdf

@@ -18,7 +18,8 @@ async function toItem(
   img: ImageMetadata,
   title: string,
   caption: string,
-  sectionLabel: string
+  sectionLabel: string,
+  video?: string
 ): Promise<GalleryItem> {
   const opt = await getImage({ src: img, widths: [640, 960, 1280, 1920], format: 'webp', quality: 90 });
   return {
@@ -30,6 +31,7 @@ async function toItem(
     title,
     caption,
     sectionLabel,
+    ...(video ? { video } : {}),
   };
 }
 
@@ -48,7 +50,7 @@ export async function buildGallerySection(cat: Category, lang: Lang): Promise<Ga
       items.push(await toItem(p.data.cover, title, fallback, label));
     } else {
       for (const g of p.data.gallery) {
-        items.push(await toItem(g.image, title, (await localizedCaptionAuto(g, lang)) ?? fallback, label));
+        items.push(await toItem(g.image, title, (await localizedCaptionAuto(g, lang)) ?? fallback, label, g.video));
       }
     }
   }

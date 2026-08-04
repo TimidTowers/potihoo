@@ -91,6 +91,41 @@ const a = about.data;
           ))}
         </ul>
       </div>
+
+      {a.courses.length > 0 && (
+        <div class="reveal">
+          <h2 class="font-display text-3xl font-semibold mb-6 flex items-center gap-3">
+            <span class="size-2 rounded-full bg-fire-500"></span>
+            {t('about.courses_title')}
+          </h2>
+          <ul class="space-y-4">
+            {a.courses.map((c) => (
+              <li class="flex flex-col md:flex-row md:items-baseline gap-2 md:gap-6 py-4 border-b border-paper/10">
+                <span class="font-display text-xl text-paper">{c.title}</span>
+                <span class="text-paper/60">{c.org}</span>
+                <span class="md:ml-auto font-mono text-sm text-paper/50">{c.period}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {a.languages.length > 0 && (
+        <div class="reveal">
+          <h2 class="font-display text-3xl font-semibold mb-6 flex items-center gap-3">
+            <span class="size-2 rounded-full bg-sun-500"></span>
+            {t('about.languages_title')}
+          </h2>
+          <ul class="flex flex-wrap gap-3">
+            {a.languages.map((l) => (
+              <li class="px-4 py-2 rounded-full border border-paper/20">
+                <span class="text-paper">{l.name}</span>
+                <span class="text-paper/50"> — {l.level}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   </section>
 

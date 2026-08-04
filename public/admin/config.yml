@@ -127,7 +127,12 @@ collections:
         summary: "{{fields.caption}}"
         hint: "Estas imágenes forman la tira vertical de la categoría, en este orden."
         fields:
-          - { label: "Imagen", name: "image", widget: "image" }
+          - { label: "Imagen", name: "image", widget: "image", hint: "Si agregas un video abajo, esta imagen se usa como portada del video." }
+          - label: "Video (opcional)"
+            name: "video"
+            widget: "string"
+            required: false
+            hint: "Ruta del archivo, ej: /videos/musepets.mp4"
           - label: "Descripción corta"
             name: "caption"
             widget: "string"
@@ -213,6 +218,25 @@ collections:
           - { label: "Título", name: "title", widget: "string" }
           - { label: "Centro", name: "org", widget: "string" }
           - { label: "Periodo", name: "period", widget: "string" }
+      - label: "Formación adicional"
+        name: "courses"
+        widget: "list"
+        label_singular: "curso"
+        required: false
+        summary: "{{fields.title}} — {{fields.org}}"
+        fields:
+          - { label: "Curso", name: "title", widget: "string" }
+          - { label: "Impartido por", name: "org", widget: "string" }
+          - { label: "Año", name: "period", widget: "string" }
+      - label: "Idiomas"
+        name: "languages"
+        widget: "list"
+        label_singular: "idioma"
+        required: false
+        summary: "{{fields.name}} — {{fields.level}}"
+        fields:
+          - { label: "Idioma", name: "name", widget: "string" }
+          - { label: "Nivel", name: "level", widget: "string" }
 
   # -------------------------------------------------------------------
   # Textos de la interfaz (menús, botones, etiquetas)
@@ -246,6 +270,8 @@ collections:
               - { label: "Título de «Herramientas»", name: "tools_title", widget: "string" }
               - { label: "Título de «Experiencia»", name: "experience_title", widget: "string" }
               - { label: "Título de «Educación»", name: "education_title", widget: "string" }
+              - { label: "Título de «Formación adicional»", name: "courses_title", widget: "string" }
+              - { label: "Título de «Idiomas»", name: "languages_title", widget: "string" }
               - { label: "Botón de contacto", name: "contact_cta", widget: "string" }
           - label: "Trabajo"
             name: "work"
@@ -316,6 +342,8 @@ collections:
               - { label: "«Tools» title", name: "tools_title", widget: "string" }
               - { label: "«Experience» title", name: "experience_title", widget: "string" }
               - { label: "«Education» title", name: "education_title", widget: "string" }
+              - { label: "«Additional training» title", name: "courses_title", widget: "string" }
+              - { label: "«Languages» title", name: "languages_title", widget: "string" }
               - { label: "Contact button", name: "contact_cta", widget: "string" }
           - label: "Work"
             name: "work"

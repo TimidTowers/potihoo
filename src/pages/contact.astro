@@ -50,12 +50,16 @@ const { email, socials } = await getSettings();
       </div>
     </div>
 
-    <form
-      id="contact-form"
-      class="md:col-span-7 reveal space-y-5"
-      action="https://formspree.io/f/your-id-here"
-      method="POST"
-    >
+    <form id="contact-form" class="md:col-span-7 reveal space-y-5" method="POST" data-email={email}>
+      <!-- Trampa anti-spam: invisible para personas, tentadora para bots -->
+      <input
+        type="text"
+        name="website"
+        tabindex="-1"
+        autocomplete="off"
+        aria-hidden="true"
+        class="absolute -left-[9999px] size-px opacity-0"
+      />
       <div class="grid md:grid-cols-2 gap-5">
         <label class="block">
           <span class="block text-xs font-mono uppercase tracking-widest text-paper/60 mb-2">
@@ -95,14 +99,89 @@ const { email, socials } = await getSettings();
 
       <button
         type="submit"
-        class="group relative inline-flex items-center gap-3 px-8 py-4 rounded-full bg-magenta-500 text-paper font-medium overflow-hidden transition-transform hover:-translate-y-0.5"
+        class="group relative inline-flex items-center gap-3 px-8 py-4 rounded-full bg-magenta-500 text-paper font-medium overflow-hidden transition-transform hover:-translate-y-0.5 disabled:opacity-60"
       >
-        <span class="relative z-10">{t('contact.form.submit')}</span>
+        <span class="relative z-10" data-submit-label>{t('contact.form.submit')}</span>
         <span class="relative z-10">→</span>
         <span class="absolute inset-0 bg-fire-500 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></span>
       </button>
 
-      <p id="form-feedback" class="hidden text-sm font-mono"></p>
+      <p
+        id="form-feedback"
+        role="status"
+        aria-live="polite"
+        class="hidden text-sm"
+        data-success={t('contact.form.success')}
+        data-error={t('contact.form.error')}
+      ></p>
     </form>
   </section>
 </Base>
+
+<script>
+  // Envío del formulario contra /api/contact. Si el proveedor de correo
+  // todavía no está configurado, abrimos el cliente de correo del visitante
+  // con el mensaje ya escrito para que nunca quede en la nada.
+  function initContactForm() {
+    const form = document.getElementById('contact-form') as HTMLFormElement | null;
+    if (!form || form.dataset.bound === '1') return;
+    form.dataset.bound = '1';
+
+    const feedback = document.getElementById('form-feedback') as HTMLElement | null;
+    const button = form.querySelector('button[type="submit"]') as HTMLButtonElement | null;
+    const label = form.querySelector('[data-submit-label]') as HTMLElement | null;
+    const original = label?.textContent ?? '';
+
+    const say = (msg: string, ok: boolean) => {
+      if (!feedback) return;
+      feedback.textContent = msg;
+      feedback.classList.remove('hidden');
+      feedback.classList.toggle('text-sun-500', ok);
+      feedback.classList.toggle('text-fire-500', !ok);
+    };
+
+    const mailtoFallback = (data: Record<string, string>) => {
+      const to = form.dataset.email || '';
+      const subject = encodeURIComponent(`potihoo · mensaje de ${data.name}`);
+      const body = encodeURIComponent(`${data.message}\n\n— ${data.name} (${data.email})`);
+      window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
+    };
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fd = new FormData(form);
+      const data = Object.fromEntries(fd.entries()) as Record<string, string>;
+
+      if (button) button.disabled = true;
+      if (label) label.textContent = '…';
+
+      try {
+        const res = await fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+
+        if (res.ok) {
+          form.reset();
+          say(feedback?.dataset.success ?? '', true);
+        } else {
+          const info = await res.json().catch(() => ({}) as { error?: string });
+          if (info.error === 'not_configured') {
+            mailtoFallback(data);
+            say(feedback?.dataset.success ?? '', true);
+          } else {
+            say(feedback?.dataset.error ?? '', false);
+          }
+        }
+      } catch {
+        mailtoFallback(data);
+      } finally {
+        if (button) button.disabled = false;
+        if (label) label.textContent = original;
+      }
+    });
+  }
+
+  document.addEventListener('astro:page-load', initContactForm);
+</script>

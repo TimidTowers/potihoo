@@ -23,21 +23,21 @@ const isActive = (base: string) => currentBase.startsWith(base);
 
 <nav
   aria-label="Secciones"
-  class="sticky top-[60px] z-30 border-b border-paper/5 bg-ink/85 backdrop-blur-md"
+  class="sticky top-[60px] z-30 border-b border-paper/10 bg-ink/95 backdrop-blur-md"
 >
-  <ul class="mx-auto max-w-7xl px-5 lg:px-10 flex items-center justify-start md:justify-center gap-6 lg:gap-8 overflow-x-auto whitespace-nowrap py-3.5 text-sm font-medium">
+  <ul class="mx-auto max-w-7xl px-5 lg:px-10 flex items-center justify-start md:justify-center gap-7 md:gap-9 lg:gap-12 overflow-x-auto whitespace-nowrap py-4 text-[15px] md:text-[17px] font-medium tracking-[0.025em]">
     {links.map((l) => (
       <li class="shrink-0">
         <a
           href={l.href}
           class:list={[
-            'relative py-2 transition-colors',
-            isActive(l.base) ? 'text-sun-500' : 'text-paper/80 hover:text-paper',
+            'relative block py-2 transition-colors',
+            isActive(l.base) ? 'text-sun-500' : 'text-paper/85 hover:text-paper',
           ]}
         >
           {l.label}
           {isActive(l.base) && (
-            <span class="absolute -bottom-1 left-0 right-0 h-px bg-gradient-to-r from-magenta-500 via-fire-500 to-sun-500"></span>
+            <span class="absolute -bottom-0.5 left-0 right-0 h-[2px] rounded-full bg-gradient-to-r from-magenta-500 via-fire-500 to-sun-500"></span>
           )}
         </a>
       </li>
