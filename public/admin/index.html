@@ -14,5 +14,100 @@
   <body>
     <!-- Decap CMS — panel de edición -->
     <script src="https://unpkg.com/decap-cms@^3.6.0/dist/decap-cms.js"></script>
+
+    <!-- Vista previa con el look real del sitio (tira vertical oscura) -->
+    <script>
+      var PREVIEW_CSS = [
+        "@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');",
+        ':root { color-scheme: dark; }',
+        'body { background: #0a0a0a; color: #f5f1ea; font-family: Inter, system-ui, sans-serif; margin: 0; padding: 2.5rem 1.5rem 5rem; }',
+        '.pv-wrap { max-width: 40rem; margin: 0 auto; }',
+        '.pv-chip { display: inline-block; padding: 0.3rem 0.9rem; border-radius: 999px; background: #e30052; color: #f5f1ea; font-family: "JetBrains Mono", monospace; font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; }',
+        '.pv-year { display: inline-block; margin-left: 0.5rem; padding: 0.3rem 0.9rem; border-radius: 999px; border: 1px solid rgba(245,241,234,0.25); color: rgba(245,241,234,0.7); font-family: "JetBrains Mono", monospace; font-size: 0.65rem; }',
+        '.pv-title { font-family: "Space Grotesk", sans-serif; font-weight: 600; letter-spacing: -0.03em; font-size: 2.6rem; line-height: 1; margin: 1.2rem 0 0.8rem; }',
+        '.pv-title .dot { color: #e30052; }',
+        '.pv-desc { color: rgba(245,241,234,0.75); font-size: 1.02rem; line-height: 1.65; max-width: 34rem; margin: 0 0 2.2rem; }',
+        '.pv-strip { display: flex; flex-direction: column; gap: 1.6rem; }',
+        '.pv-strip figure { margin: 0; }',
+        '.pv-strip img { display: block; width: 100%; height: auto; border-radius: 1rem; background: rgba(245,241,234,0.05); }',
+        '.pv-strip figcaption { margin-top: 0.55rem; font-size: 0.85rem; color: rgba(245,241,234,0.6); }',
+        '.pv-empty { border: 1px dashed rgba(245,241,234,0.25); border-radius: 1rem; padding: 2.2rem 1.4rem; text-align: center; color: rgba(245,241,234,0.5); font-style: italic; }',
+        '.pv-meta { margin-top: 2.4rem; padding-top: 1.4rem; border-top: 1px solid rgba(245,241,234,0.12); display: flex; flex-wrap: wrap; gap: 0.5rem; }',
+        '.pv-tool { padding: 0.35rem 0.9rem; border-radius: 999px; border: 1px solid rgba(245,241,234,0.2); font-size: 0.8rem; color: rgba(245,241,234,0.85); }'
+      ].join('\n');
+
+      CMS.registerPreviewStyle(PREVIEW_CSS, { raw: true });
+
+      var CATEGORY_LABELS = {
+        animation: 'Animación',
+        characters: 'Diseño de personajes',
+        illustration: 'Ilustración',
+        backgrounds: 'Diseño de fondos'
+      };
+
+      var ProjectPreview = createClass({
+        assetSrc: function (path) {
+          if (!path) return '';
+          var asset = this.props.getAsset(path);
+          return asset ? asset.toString() : '';
+        },
+        render: function () {
+          var entry = this.props.entry;
+          var data = entry.get('data');
+          if (!data) return h('div');
+
+          var title = data.get('title') || 'Sin título';
+          var category = data.get('category');
+          var year = data.get('year');
+          var description = data.get('description') || '';
+          var cover = data.get('cover');
+          var gallery = data.get('gallery');
+          var tools = data.get('tools');
+          var items = gallery && gallery.size ? gallery.toJS() : [];
+          var self = this;
+
+          var figures;
+          if (items.length) {
+            figures = items.map(function (it, i) {
+              return h(
+                'figure',
+                { key: i },
+                h('img', { src: self.assetSrc(it.image), alt: it.caption || title }),
+                it.caption ? h('figcaption', {}, it.caption) : null
+              );
+            });
+          } else if (cover) {
+            figures = [h('figure', { key: 'cover' }, h('img', { src: this.assetSrc(cover), alt: title }))];
+          } else {
+            figures = [h('div', { key: 'empty', className: 'pv-empty' }, 'Agrega imágenes a la galería para verlas aquí')];
+          }
+
+          return h(
+            'div',
+            { className: 'pv-wrap' },
+            h(
+              'div',
+              {},
+              category ? h('span', { className: 'pv-chip' }, CATEGORY_LABELS[category] || category) : null,
+              year ? h('span', { className: 'pv-year' }, String(year)) : null
+            ),
+            h('h1', { className: 'pv-title' }, title, h('span', { className: 'dot' }, '.')),
+            description ? h('p', { className: 'pv-desc' }, description) : null,
+            h('div', { className: 'pv-strip' }, figures),
+            tools && tools.size
+              ? h(
+                  'div',
+                  { className: 'pv-meta' },
+                  tools.toJS().map(function (tool, i) {
+                    return h('span', { className: 'pv-tool', key: i }, tool);
+                  })
+                )
+              : null
+          );
+        }
+      });
+
+      CMS.registerPreviewTemplate('projects', ProjectPreview);
+    </script>
   </body>
 </html>

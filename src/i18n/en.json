@@ -42,12 +42,11 @@
   "work": {
     "title": "Work",
     "subtitle": "A curated collection of animation, character design and illustration.",
-    "all": "All",
     "categories": {
       "animation": "Animation",
-      "characters": "Characters",
+      "characters": "Character design",
       "illustration": "Illustration",
-      "motion": "Motion"
+      "backgrounds": "Background design"
     },
     "no_projects": "New projects coming soon.",
     "back": "Back to work",

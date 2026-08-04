@@ -3,12 +3,16 @@ title: "Backgrounds — estilo simple"
 title_en: "Backgrounds — simplistic style"
 description: "Serie de paisajes con estilo simplificado: trazos limpios, formas grandes y paletas reducidas."
 description_en: "Series of landscapes in a simplified style: clean lines, big shapes and reduced palettes."
-category: "illustration"
+category: "backgrounds"
 year: 2024
-cover: "/images/portfolio/simplistic-volcano.png"
+cover: ../../assets/portfolio/simplistic-volcano.png
 gallery:
-  - "/images/portfolio/simplistic-volcano.png"
-  - "/images/portfolio/simplistic-forest.png"
+  - image: ../../assets/portfolio/simplistic-volcano.png
+    caption: "Volcán activo — estilo simple"
+    caption_en: "Active volcano — simplistic style"
+  - image: ../../assets/portfolio/simplistic-forest.png
+    caption: "Bosque al atardecer — estilo simple"
+    caption_en: "Forest at sunset — simplistic style"
 role: "Background Artist"
 client: "Proyecto personal"
 tools:

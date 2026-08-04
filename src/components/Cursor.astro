@@ -23,10 +23,11 @@
     };
     animate();
 
+    // Event delegation so elements hydrated later (React islands) also trigger the ring
     const hoverables = 'a, button, [role="button"], input, textarea, select, .hoverable';
-    document.querySelectorAll(hoverables).forEach((el) => {
-      el.addEventListener('mouseenter', () => ring.classList.add('is-hover'));
-      el.addEventListener('mouseleave', () => ring.classList.remove('is-hover'));
+    document.addEventListener('mouseover', (e) => {
+      const target = e.target as Element | null;
+      ring.classList.toggle('is-hover', !!target?.closest?.(hoverables));
     });
 
     document.addEventListener('mouseleave', () => {

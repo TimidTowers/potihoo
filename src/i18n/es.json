@@ -42,12 +42,11 @@
   "work": {
     "title": "Trabajo",
     "subtitle": "Una colección curada de animación, diseño de personajes e ilustración.",
-    "all": "Todo",
     "categories": {
       "animation": "Animación",
-      "characters": "Personajes",
+      "characters": "Diseño de personajes",
       "illustration": "Ilustración",
-      "motion": "Motion"
+      "backgrounds": "Diseño de fondos"
     },
     "no_projects": "Pronto habrá nuevos proyectos aquí.",
     "back": "Volver al trabajo",

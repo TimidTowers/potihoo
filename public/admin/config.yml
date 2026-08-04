@@ -14,7 +14,9 @@ backend:
 # Para edición local (requiere `npx decap-server` corriendo):
 # local_backend: true
 
-publish_mode: simple
+# Borradores antes de publicar: guardar deja el cambio "In review",
+# y solo al pasar a "Ready" + Publish se publica en el sitio.
+publish_mode: editorial_workflow
 media_folder: "public/images"
 public_folder: "/images"
 
@@ -35,6 +37,10 @@ collections:
     slug: "{{slug}}"
     summary: "{{title}} — {{category}} · {{year}}"
     sortable_fields: ["order", "year", "title"]
+    # Las imágenes de proyectos viven en src/assets para que Astro las optimice.
+    # public_folder relativo → Decap guarda rutas relativas al .md (../../assets/...).
+    media_folder: "/src/assets/portfolio"
+    public_folder: "../../assets/portfolio"
     view_filters:
       - label: "Destacados"
         field: featured
@@ -51,17 +57,21 @@ collections:
         name: "category"
         widget: "select"
         options:
-          - { label: "Animación",    value: "animation" }
-          - { label: "Personajes",   value: "characters" }
-          - { label: "Ilustración",  value: "illustration" }
-          - { label: "Motion",       value: "motion" }
+          - { label: "Animación",           value: "animation" }
+          - { label: "Diseño de personajes", value: "characters" }
+          - { label: "Ilustración",         value: "illustration" }
+          - { label: "Diseño de fondos",    value: "backgrounds" }
       - { label: "Año",            name: "year",     widget: "number", value_type: "int", min: 2000, max: 2100 }
       - { label: "Imagen portada", name: "cover",    widget: "image" }
-      - label: "Galería"
+      - label: "Galería (arrastra ⋮⋮ para reordenar)"
         name: "gallery"
         widget: "list"
         required: false
-        field: { label: "Imagen", name: "image", widget: "image" }
+        summary: "{{fields.caption}}"
+        fields:
+          - { label: "Imagen", name: "image", widget: "image" }
+          - { label: "Descripción corta (Español) — se ve al ampliar la imagen", name: "caption", widget: "string", required: false }
+          - { label: "Short description (English)", name: "caption_en", widget: "string", required: false }
       - { label: "Video (URL — Vimeo, YouTube, mp4)", name: "video", widget: "string", required: false }
       - { label: "Rol",            name: "role",     widget: "string", required: false }
       - { label: "Cliente",        name: "client",   widget: "string", required: false }
@@ -169,12 +179,11 @@ collections:
           - { label: "Work",    name: "work",    widget: "object", fields: [
               { label: "Título",    name: "title",    widget: "string" },
               { label: "Subtítulo", name: "subtitle", widget: "text" },
-              { label: "Filtro: Todo", name: "all", widget: "string" },
               { label: "Categorías",   name: "categories", widget: "object", fields: [
-                  { label: "Animación",    name: "animation",    widget: "string" },
-                  { label: "Personajes",   name: "characters",   widget: "string" },
-                  { label: "Ilustración",  name: "illustration", widget: "string" },
-                  { label: "Motion",       name: "motion",       widget: "string" }
+                  { label: "Animación",            name: "animation",    widget: "string" },
+                  { label: "Diseño de personajes", name: "characters",   widget: "string" },
+                  { label: "Ilustración",          name: "illustration", widget: "string" },
+                  { label: "Diseño de fondos",     name: "backgrounds",  widget: "string" }
               ]},
               { label: "Sin proyectos", name: "no_projects", widget: "string" },
               { label: "Volver",        name: "back",        widget: "string" },
@@ -250,12 +259,11 @@ collections:
           - { label: "Work",    name: "work",    widget: "object", fields: [
               { label: "Title",    name: "title",    widget: "string" },
               { label: "Subtitle", name: "subtitle", widget: "text" },
-              { label: "Filter: All", name: "all", widget: "string" },
               { label: "Categories",  name: "categories", widget: "object", fields: [
-                  { label: "Animation",    name: "animation",    widget: "string" },
-                  { label: "Characters",   name: "characters",   widget: "string" },
-                  { label: "Illustration", name: "illustration", widget: "string" },
-                  { label: "Motion",       name: "motion",       widget: "string" }
+                  { label: "Animation",        name: "animation",    widget: "string" },
+                  { label: "Character design", name: "characters",   widget: "string" },
+                  { label: "Illustration",     name: "illustration", widget: "string" },
+                  { label: "Background design", name: "backgrounds", widget: "string" }
               ]},
               { label: "No projects", name: "no_projects", widget: "string" },
               { label: "Back",        name: "back",        widget: "string" },

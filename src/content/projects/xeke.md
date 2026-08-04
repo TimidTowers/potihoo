@@ -7,7 +7,7 @@ description_en: "Complete design of the character Xeke: silhouette exploration,
   expressions, prop design and final illustration."
 category: characters
 year: 2025
-cover: /images/portfolio/xeke-character.png
+cover: ../../assets/portfolio/xeke-character.png
 gallery: []
 role: Character Designer
 client: Proyecto personal

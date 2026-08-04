@@ -1,5 +1,6 @@
 ---
 import { getLangFromUrl, useTranslations, localizedPath, stripLocaleFromPath, languages, type Lang } from '@/i18n/utils';
+import { CATEGORY_ORDER } from '@/lib/projects';
 
 const lang: Lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
@@ -11,6 +12,13 @@ const links = [
   { href: localizedPath('/about', lang),   label: t('nav.about'),   base: '/about' },
   { href: localizedPath('/contact', lang), label: t('nav.contact'), base: '/contact' },
 ];
+
+// Category shortcuts jump straight to each section of /work
+const workBase = localizedPath('/work', lang);
+const catLinks = CATEGORY_ORDER.map((c) => ({
+  href: `${workBase}#${c}`,
+  label: t(`work.categories.${c}`),
+}));
 
 const isActive = (base: string) =>
   base === '/' ? currentBase === '/' : currentBase.startsWith(base);
@@ -24,8 +32,31 @@ const isActive = (base: string) =>
       <span class="text-magenta-500 group-hover:text-fire-500 transition-colors">.</span>
     </a>
 
-    <ul class="hidden md:flex items-center gap-8 text-sm font-medium">
-      {links.map((l) => (
+    <ul class="hidden md:flex items-center gap-4 lg:gap-5 text-sm font-medium">
+      {links.slice(0, 2).map((l) => (
+        <li>
+          <a
+            href={l.href}
+            class:list={[
+              'relative py-2 transition-colors',
+              isActive(l.base) ? 'text-sun-500' : 'text-paper/80 hover:text-paper',
+            ]}
+          >
+            {l.label}
+            {isActive(l.base) && (
+              <span class="absolute -bottom-px left-0 right-0 h-px bg-gradient-to-r from-magenta-500 via-fire-500 to-sun-500"></span>
+            )}
+          </a>
+        </li>
+      ))}
+      {catLinks.map((c) => (
+        <li class="hidden lg:block">
+          <a href={c.href} class="py-2 text-paper/60 hover:text-magenta-500 transition-colors">
+            {c.label}
+          </a>
+        </li>
+      ))}
+      {links.slice(2).map((l) => (
         <li>
           <a
             href={l.href}
@@ -73,7 +104,27 @@ const isActive = (base: string) =>
   <!-- Mobile menu -->
   <div id="nav-menu" class="md:hidden hidden border-t border-paper/5 bg-ink">
     <ul class="px-5 py-6 flex flex-col gap-4 text-lg font-display">
-      {links.map((l) => (
+      {links.slice(0, 2).map((l) => (
+        <li>
+          <a
+            href={l.href}
+            class:list={[
+              'block py-2',
+              isActive(l.base) ? 'text-sun-500' : 'text-paper',
+            ]}
+          >
+            {l.label}
+          </a>
+        </li>
+      ))}
+      {catLinks.map((c) => (
+        <li>
+          <a href={c.href} class="block py-1 pl-4 text-base text-paper/70 hover:text-magenta-500 transition-colors">
+            {c.label}
+          </a>
+        </li>
+      ))}
+      {links.slice(2).map((l) => (
         <li>
           <a
             href={l.href}

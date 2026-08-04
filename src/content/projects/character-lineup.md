@@ -5,9 +5,11 @@ description: "Comparación de escala y diseño entre cuatro personajes del mismo
 description_en: "Scale and design comparison between four characters from the same universe."
 category: "characters"
 year: 2025
-cover: "/images/portfolio/character-lineup.png"
+cover: ../../assets/portfolio/character-lineup.png
 gallery:
-  - "/images/portfolio/character-lineup.png"
+  - image: ../../assets/portfolio/character-lineup.png
+    caption: "Lineup — comparación de escala entre cuatro personajes"
+    caption_en: "Lineup — scale comparison between four characters"
 role: "Character Designer"
 client: "Proyecto personal"
 tools:
