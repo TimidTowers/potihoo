@@ -1,45 +1,42 @@
 ---
 import Base from '@/layouts/Base.astro';
 import { getLangFromUrl, useTranslations, type Lang } from '@/i18n/utils';
+import { getSettings } from '@/lib/settings';
 
 const lang: Lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 
-const social = [
-  { label: 'Instagram', handle: '@potihoo',         href: 'https://www.instagram.com/potihoo' },
-  { label: 'LinkedIn',  handle: '/in/anapaulatvi',  href: 'https://www.linkedin.com/in/anapaulatvi' },
-  { label: 'X',         handle: '@poti_hoo',        href: 'https://x.com/poti_hoo' },
-];
+const { email, socials } = await getSettings();
 ---
 
 <Base title={t('contact.title')}>
-  <section class="mx-auto max-w-7xl px-5 lg:px-10 py-20 md:py-28">
+  <section class="mx-auto max-w-7xl px-5 lg:px-10 py-16 md:py-24 text-center">
     <p class="font-mono text-xs uppercase tracking-[0.3em] text-fire-500 mb-4">◆ {t('contact.title')}</p>
-    <h1 class="font-display text-6xl md:text-9xl font-semibold tracking-tight leading-[0.95] overflow-visible">
+    <h1 class="font-display text-5xl md:text-7xl font-semibold tracking-tight leading-[0.95] overflow-visible">
       <span class="text-gradient italic inline-block pr-[0.15em]">{t('contact.title').split(' ')[0]}</span>
       {t('contact.title').split(' ').slice(1).join(' ') && (
         <span class="block text-paper">{t('contact.title').split(' ').slice(1).join(' ')}</span>
       )}
     </h1>
-    <p class="mt-8 max-w-2xl text-xl text-paper/75">{t('contact.subtitle')}</p>
+    <p class="mt-8 mx-auto max-w-2xl text-lg md:text-xl text-paper/75">{t('contact.subtitle')}</p>
   </section>
 
   <section class="mx-auto max-w-7xl px-5 lg:px-10 grid md:grid-cols-12 gap-10 md:gap-16 pb-20">
     <div class="md:col-span-5 space-y-10 reveal">
       <div>
         <p class="font-mono text-xs uppercase tracking-widest text-sun-500 mb-3">{t('contact.email_label')}</p>
-        <a href="mailto:anapaulatvi@gmail.com" class="font-display text-3xl md:text-4xl hover:text-magenta-500 transition-colors break-all">
-          anapaulatvi@gmail.com
+        <a href={`mailto:${email}`} class="font-display text-3xl md:text-4xl hover:text-magenta-500 transition-colors break-all">
+          {email}
         </a>
       </div>
 
       <div>
         <p class="font-mono text-xs uppercase tracking-widest text-sun-500 mb-3">{t('contact.social_label')}</p>
         <ul class="space-y-3">
-          {social.map((s) => (
+          {socials.map((s) => (
             <li>
               <a
-                href={s.href}
+                href={s.url}
                 target="_blank"
                 rel="noopener noreferrer"
                 class="group flex items-baseline justify-between gap-4 py-2 border-b border-paper/10 hover:border-magenta-500 transition-colors"

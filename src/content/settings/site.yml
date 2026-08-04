@@ -1,0 +1,14 @@
+email: anapaulatvi@gmail.com
+banner:
+  - image: ../../assets/banner/bannerpth.jpg
+    alt: potihoo — Ana Paula
+socials:
+  - label: Instagram
+    handle: "@potihoo"
+    url: https://www.instagram.com/potihoo
+  - label: LinkedIn
+    handle: /in/anapaulatvi
+    url: https://www.linkedin.com/in/anapaulatvi
+  - label: X
+    handle: "@poti_hoo"
+    url: https://x.com/poti_hoo

@@ -1,16 +1,13 @@
 ---
 import { getLangFromUrl, useTranslations, localizedPath, stripLocaleFromPath, type Lang } from '@/i18n/utils';
+import { getSettings } from '@/lib/settings';
 
 const lang: Lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 const year = new Date().getFullYear();
 const onContactPage = stripLocaleFromPath(Astro.url.pathname).startsWith('/contact');
 
-const social = [
-  { label: 'Instagram', href: 'https://www.instagram.com/potihoo' },
-  { label: 'LinkedIn',  href: 'https://www.linkedin.com/in/anapaulatvi' },
-  { label: 'X',         href: 'https://x.com/poti_hoo' },
-];
+const { email, socials } = await getSettings();
 ---
 
 <footer class="relative mt-32 border-t border-paper/10 bg-ink">
@@ -43,18 +40,18 @@ const social = [
 
     <div>
       <h3 class="text-sun-500 font-mono text-xs uppercase tracking-widest mb-4">{t('contact.email_label')}</h3>
-      <a href="mailto:anapaulatvi@gmail.com" class="text-2xl font-display hover:text-magenta-500 transition-colors break-all">
-        anapaulatvi@gmail.com
+      <a href={`mailto:${email}`} class="text-2xl font-display hover:text-magenta-500 transition-colors break-all">
+        {email}
       </a>
     </div>
 
     <div>
       <h3 class="text-sun-500 font-mono text-xs uppercase tracking-widest mb-4">{t('contact.social_label')}</h3>
       <ul class="space-y-2">
-        {social.map((s) => (
+        {socials.map((s) => (
           <li>
             <a
-              href={s.href}
+              href={s.url}
               target="_blank"
               rel="noopener noreferrer"
               class="inline-flex items-center gap-2 text-paper/80 hover:text-magenta-500 transition-colors group"

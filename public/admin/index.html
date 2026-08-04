@@ -1,22 +1,366 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>potihoo · CMS</title>
+    <title>potihoo · Panel de edición</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <!-- Path absoluto al config para evitar 404 con trailingSlash: false -->
     <link href="/admin/config.yml" type="text/yaml" rel="cms-config-url" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- =================================================================
+         Tema del panel (claro / oscuro). Decap genera clases de emotion
+         del tipo `css-HASH-NombreDelComponente`, así que targeteamos por
+         subcadena del nombre. Prefijo #nc-root + !important para ganarle
+         a los estilos que emotion inyecta en runtime.
+         ================================================================= -->
     <style>
-      body { background: #0a0a0a; }
+      :root {
+        --cms-bg: #f4f2ef;
+        --cms-surface: #ffffff;
+        --cms-surface-2: #fbfaf8;
+        --cms-border: rgba(16, 16, 20, 0.12);
+        --cms-text: #16161a;
+        --cms-text-dim: rgba(22, 22, 26, 0.6);
+        --cms-shadow: 0 1px 2px rgba(16, 16, 20, 0.06), 0 8px 24px -12px rgba(16, 16, 20, 0.18);
+        --cms-accent: #e30052;
+        --cms-accent-2: #fc4b08;
+        --cms-accent-3: #fee12b;
+        --cms-radius: 14px;
+      }
+
+      html[data-cms-theme='dark'] {
+        --cms-bg: #0f0f12;
+        --cms-surface: #17171b;
+        --cms-surface-2: #1d1d22;
+        --cms-border: rgba(245, 241, 234, 0.12);
+        --cms-text: #f5f1ea;
+        --cms-text-dim: rgba(245, 241, 234, 0.6);
+        --cms-shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 10px 30px -14px rgba(0, 0, 0, 0.8);
+        color-scheme: dark;
+      }
+
+      html,
+      body {
+        background: var(--cms-bg) !important;
+        color: var(--cms-text) !important;
+        font-family: 'Inter', system-ui, sans-serif !important;
+      }
+
+      #nc-root,
+      #nc-root [class*='AppMainContainer'],
+      #nc-root [class*='EditorContainer'],
+      #nc-root [class*='CollectionMain'],
+      #nc-root [class*='CollectionContainer'] {
+        background: var(--cms-bg) !important;
+        color: var(--cms-text) !important;
+      }
+
+      /* --- Barra superior ------------------------------------------- */
+      #nc-root [class*='AppHeader'] {
+        background: var(--cms-surface) !important;
+        border-bottom: 1px solid var(--cms-border) !important;
+        box-shadow: none !important;
+        color: var(--cms-text) !important;
+      }
+      #nc-root [class*='AppHeaderNavLink'],
+      #nc-root [class*='AppHeaderButton'],
+      #nc-root [class*='AppHeaderSiteLink'],
+      #nc-root [class*='AppHeaderLink'] {
+        color: var(--cms-text-dim) !important;
+        background: transparent !important;
+        border-radius: 999px !important;
+        font-weight: 500 !important;
+      }
+      #nc-root [class*='AppHeaderNavLink']:hover,
+      #nc-root [class*='AppHeaderButton']:hover,
+      #nc-root [class*='AppHeaderSiteLink']:hover {
+        color: var(--cms-text) !important;
+        background: var(--cms-surface-2) !important;
+      }
+      #nc-root .header-link-active,
+      #nc-root [class*='AppHeaderNavLink'].header-link-active {
+        color: #fff !important;
+        background: var(--cms-accent) !important;
+      }
+      #nc-root [class*='AppHeaderQuickNewButton'],
+      #nc-root [class*='StyledDropdownButton'] {
+        background: var(--cms-accent) !important;
+        color: #fff !important;
+        border-radius: 999px !important;
+        font-weight: 600 !important;
+        box-shadow: none !important;
+      }
+      #nc-root [class*='AvatarDropdownButton'] {
+        background: var(--cms-surface-2) !important;
+        border-radius: 999px !important;
+      }
+
+      /* --- Barra lateral -------------------------------------------- */
+      #nc-root [class*='SidebarContainer'] {
+        background: var(--cms-surface) !important;
+        border: 1px solid var(--cms-border) !important;
+        border-radius: var(--cms-radius) !important;
+        box-shadow: var(--cms-shadow) !important;
+        color: var(--cms-text) !important;
+      }
+      #nc-root [class*='SidebarHeading'] {
+        color: var(--cms-text-dim) !important;
+        font-family: 'Inter', sans-serif !important;
+        font-size: 11px !important;
+        font-weight: 600 !important;
+        letter-spacing: 0.12em !important;
+        text-transform: uppercase !important;
+        background: transparent !important;
+        border: 0 !important;
+      }
+      #nc-root [class*='SidebarNavLink'] {
+        color: var(--cms-text-dim) !important;
+        border-radius: 10px !important;
+        margin: 2px 8px !important;
+        font-weight: 500 !important;
+        border-left: 0 !important;
+        transition: background 0.15s, color 0.15s !important;
+      }
+      #nc-root [class*='SidebarNavLink']:hover {
+        background: var(--cms-surface-2) !important;
+        color: var(--cms-text) !important;
+      }
+      #nc-root .sidebar-active,
+      #nc-root [class*='SidebarNavLink'].sidebar-active {
+        background: var(--cms-accent) !important;
+        color: #fff !important;
+      }
+      #nc-root .sidebar-active [class*='IconWrapper'] svg,
+      #nc-root .sidebar-active svg {
+        fill: #fff !important;
+      }
+
+      /* --- Cabecera de colección ------------------------------------ */
+      #nc-root [class*='CollectionTopContainer'],
+      #nc-root [class*='CollectionControlsContainer'],
+      #nc-root [class*='ViewControls'] {
+        background: transparent !important;
+        border: 0 !important;
+        box-shadow: none !important;
+      }
+      #nc-root [class*='CollectionTopHeading'] {
+        font-family: 'Space Grotesk', sans-serif !important;
+        font-weight: 600 !important;
+        letter-spacing: -0.02em !important;
+        color: var(--cms-text) !important;
+      }
+      #nc-root [class*='ViewControlsButton'] {
+        color: var(--cms-text-dim) !important;
+      }
+
+      /* --- Tarjetas de entradas ------------------------------------- */
+      #nc-root [class*='ListCard'] {
+        background: var(--cms-surface) !important;
+        border: 1px solid var(--cms-border) !important;
+        border-radius: var(--cms-radius) !important;
+        box-shadow: var(--cms-shadow) !important;
+        overflow: hidden !important;
+        transition: transform 0.18s ease, border-color 0.18s ease !important;
+      }
+      #nc-root [class*='ListCard']:hover {
+        transform: translateY(-2px) !important;
+        border-color: var(--cms-accent) !important;
+      }
+      #nc-root [class*='ListCardTitle'] {
+        font-family: 'Space Grotesk', sans-serif !important;
+        color: var(--cms-text) !important;
+        font-weight: 600 !important;
+      }
+      #nc-root [class*='ListCardLink'] {
+        color: var(--cms-text) !important;
+      }
+
+      /* --- Búsqueda -------------------------------------------------- */
+      #nc-root [class*='SearchContainer'],
+      #nc-root [class*='InputContainer'] {
+        background: var(--cms-surface-2) !important;
+        border: 1px solid var(--cms-border) !important;
+        border-radius: 999px !important;
+      }
+      #nc-root [class*='SearchInput'] {
+        background: transparent !important;
+        color: var(--cms-text) !important;
+      }
+
+      /* --- Editor: paneles y barra de herramientas ------------------- */
+      #nc-root [class*='ToolbarContainer'],
+      #nc-root [class*='TopBarContainer'],
+      #nc-root [class*='EditorControlBar'],
+      #nc-root [class*='ControlTopbar'] {
+        background: var(--cms-surface) !important;
+        border-color: var(--cms-border) !important;
+        box-shadow: none !important;
+        color: var(--cms-text) !important;
+      }
+      #nc-root [class*='ControlPaneContainer'] {
+        background: var(--cms-bg) !important;
+        color: var(--cms-text) !important;
+      }
+      #nc-root [class*='ControlContainer'] {
+        background: var(--cms-surface) !important;
+        border: 1px solid var(--cms-border) !important;
+        border-radius: var(--cms-radius) !important;
+        padding: 14px 16px !important;
+        margin-bottom: 14px !important;
+        box-shadow: var(--cms-shadow) !important;
+      }
+      #nc-root [class*='FieldLabel'] {
+        font-family: 'Inter', sans-serif !important;
+        font-size: 12px !important;
+        font-weight: 600 !important;
+        letter-spacing: 0.04em !important;
+        text-transform: none !important;
+        color: var(--cms-text-dim) !important;
+        background: transparent !important;
+        padding: 0 0 6px !important;
+      }
+      #nc-root [class*='ControlHint'] {
+        color: var(--cms-text-dim) !important;
+        font-size: 12px !important;
+        font-style: normal !important;
+        margin-top: 6px !important;
+        opacity: 0.85 !important;
+      }
+      #nc-root [class*='StyledSplitPane'] > .Resizer {
+        background: var(--cms-border) !important;
+      }
+
+      /* --- Campos de formulario -------------------------------------- */
+      #nc-root input[type='text'],
+      #nc-root input[type='email'],
+      #nc-root input[type='number'],
+      #nc-root input[type='url'],
+      #nc-root input:not([type]),
+      #nc-root textarea,
+      #nc-root select,
+      #nc-root [class*='TextControl'],
+      #nc-root .cm-editor,
+      #nc-root [data-slate-editor='true'] {
+        background: var(--cms-surface-2) !important;
+        color: var(--cms-text) !important;
+        border: 1px solid var(--cms-border) !important;
+        border-radius: 10px !important;
+        font-family: 'Inter', sans-serif !important;
+        box-shadow: none !important;
+      }
+      #nc-root input:focus,
+      #nc-root textarea:focus,
+      #nc-root select:focus,
+      #nc-root [class*='TextControl']:focus {
+        border-color: var(--cms-accent) !important;
+        outline: none !important;
+      }
+
+      /* --- Botones ---------------------------------------------------- */
+      #nc-root [class*='ToolbarButton'],
+      #nc-root [class*='ButtonRound'],
+      #nc-root [class*='AddButton'],
+      #nc-root [class*='FileWidgetButton'],
+      #nc-root [class*='ExpandButton'] {
+        border-radius: 999px !important;
+        font-weight: 600 !important;
+        box-shadow: none !important;
+      }
+      #nc-root [class*='PublishedToolbarButton'] {
+        background: var(--cms-accent) !important;
+        color: #fff !important;
+      }
+      #nc-root [class*='DeleteButton'] {
+        background: transparent !important;
+        color: var(--cms-accent-2) !important;
+      }
+      #nc-root [class*='AddButton'],
+      #nc-root [class*='FileWidgetButton']:not([class*='Remove']) {
+        background: var(--cms-accent) !important;
+        color: #fff !important;
+      }
+
+      /* --- Vista previa ---------------------------------------------- */
+      #nc-root [class*='PreviewPaneContainer'],
+      #nc-root [class*='PreviewPaneFrame'] {
+        background: #0a0a0a !important;
+        border-color: var(--cms-border) !important;
+      }
+
+      /* --- Botón de tema (inyectado) --------------------------------- */
+      #cms-theme-toggle {
+        position: fixed;
+        right: 18px;
+        bottom: 18px;
+        z-index: 99999;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 16px;
+        border: 1px solid var(--cms-border);
+        border-radius: 999px;
+        background: var(--cms-surface);
+        color: var(--cms-text);
+        font: 600 13px/1 'Inter', sans-serif;
+        cursor: pointer;
+        box-shadow: var(--cms-shadow);
+        transition: transform 0.15s ease, border-color 0.15s ease;
+      }
+      #cms-theme-toggle:hover {
+        transform: translateY(-2px);
+        border-color: var(--cms-accent);
+      }
     </style>
   </head>
   <body>
+    <script>
+      // Aplica el tema guardado antes de pintar, para que no haya parpadeo
+      (function () {
+        var saved = localStorage.getItem('potihoo-cms-theme') || 'dark';
+        document.documentElement.setAttribute('data-cms-theme', saved);
+      })();
+    </script>
+
     <!-- Decap CMS — panel de edición -->
     <script src="https://unpkg.com/decap-cms@^3.6.0/dist/decap-cms.js"></script>
 
-    <!-- Vista previa con el look real del sitio (tira vertical oscura) -->
     <script>
+      // ---------------------------------------------------------------
+      // Botón claro / oscuro
+      // ---------------------------------------------------------------
+      (function () {
+        var btn = document.createElement('button');
+        btn.id = 'cms-theme-toggle';
+        btn.type = 'button';
+
+        function paint() {
+          var dark = document.documentElement.getAttribute('data-cms-theme') === 'dark';
+          btn.textContent = dark ? '☀️  Modo claro' : '🌙  Modo oscuro';
+          btn.setAttribute('aria-label', dark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro');
+        }
+
+        btn.addEventListener('click', function () {
+          var next = document.documentElement.getAttribute('data-cms-theme') === 'dark' ? 'light' : 'dark';
+          document.documentElement.setAttribute('data-cms-theme', next);
+          localStorage.setItem('potihoo-cms-theme', next);
+          paint();
+        });
+
+        paint();
+        document.body.appendChild(btn);
+      })();
+
+      // ---------------------------------------------------------------
+      // Vista previa de Proyectos con el look real del sitio
+      // ---------------------------------------------------------------
       var PREVIEW_CSS = [
         "@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');",
         ':root { color-scheme: dark; }',
@@ -25,7 +369,6 @@
         '.pv-chip { display: inline-block; padding: 0.3rem 0.9rem; border-radius: 999px; background: #e30052; color: #f5f1ea; font-family: "JetBrains Mono", monospace; font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; }',
         '.pv-year { display: inline-block; margin-left: 0.5rem; padding: 0.3rem 0.9rem; border-radius: 999px; border: 1px solid rgba(245,241,234,0.25); color: rgba(245,241,234,0.7); font-family: "JetBrains Mono", monospace; font-size: 0.65rem; }',
         '.pv-title { font-family: "Space Grotesk", sans-serif; font-weight: 600; letter-spacing: -0.03em; font-size: 2.6rem; line-height: 1; margin: 1.2rem 0 0.8rem; }',
-        '.pv-title .dot { color: #e30052; }',
         '.pv-desc { color: rgba(245,241,234,0.75); font-size: 1.02rem; line-height: 1.65; max-width: 34rem; margin: 0 0 2.2rem; }',
         '.pv-strip { display: flex; flex-direction: column; gap: 1.6rem; }',
         '.pv-strip figure { margin: 0; }',
@@ -91,7 +434,7 @@
               category ? h('span', { className: 'pv-chip' }, CATEGORY_LABELS[category] || category) : null,
               year ? h('span', { className: 'pv-year' }, String(year)) : null
             ),
-            h('h1', { className: 'pv-title' }, title, h('span', { className: 'dot' }, '.')),
+            h('h1', { className: 'pv-title' }, title),
             description ? h('p', { className: 'pv-desc' }, description) : null,
             h('div', { className: 'pv-strip' }, figures),
             tools && tools.size
