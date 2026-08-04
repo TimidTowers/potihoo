@@ -1,8 +1,8 @@
 ---
 // Custom cursor for desktop only — no props.
 ---
-<div class="cursor-dot" aria-hidden="true"></div>
-<div class="cursor-ring" aria-hidden="true"></div>
+<div class="cursor-dot" aria-hidden="true" transition:persist="cursor-dot"></div>
+<div class="cursor-ring" aria-hidden="true" transition:persist="cursor-ring"></div>
 
 <script>
   const dot = document.querySelector<HTMLElement>('.cursor-dot');
